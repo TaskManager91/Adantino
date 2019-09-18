@@ -16,10 +16,13 @@ namespace Adantino_2
         [STAThread]
         static void Main()
         {
+            Map myMap = new Map();
+            myMap.initField();
+
+            Console.WriteLine("Hallo welt!");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
-
+            Application.Run(new Form1(myMap));
         }
     }
 }
