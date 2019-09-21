@@ -8,12 +8,7 @@ namespace Adantino_2
 {
     public class Map
     {
-        int fieldRadius = 9;    //Field radius in each direction 
-        int fieldSize = 27;     //Field size in px
-
-        //public int[,] myField = new int[20, 20];           //The "field"
-        //public List<int[,]> moveList = new List<int[,]>(); //List that stores each move
-        //public int moveCounter = 0;    //how many moves have been made
+        const int fieldRadius = 9;    //Field radius in each direction 
 
         public bool black { get; set; }
         public int[,] myField { get; set; }
@@ -28,16 +23,13 @@ namespace Adantino_2
                 int r2 = Math.Min(fieldRadius, -q + fieldRadius);
                 for (int r = r1; r <= r2; r++)
                 {
-                    if (myField[r + fieldRadius, q + fieldRadius] == 1){}
-                    else if (myField[r + fieldRadius, q + fieldRadius] == 2){}
-                    else if (myField[r + fieldRadius, q + fieldRadius] == 3 || myField[r + fieldRadius, q + fieldRadius] == 0)
+                    if (myField[r + fieldRadius, q + fieldRadius] == 3 || myField[r + fieldRadius, q + fieldRadius] == 0)
                     {
-                        int checker = 0;
                         int y = r + fieldRadius;
                         int x = q + fieldRadius;
 
                         //check if at least two neighbors are set
-                        checker = checkNeighbors(x, y, 1, 2);
+                        int checker = checkNeighbors(x, y, 1, 2);
 
                         if (checker >= 2)
                             myField[r + fieldRadius, q + fieldRadius] = 3;
@@ -81,7 +73,37 @@ namespace Adantino_2
 
         public int checkWin()
         {
-            return 0;
+            int win = 0;
+            bool[,] prisoned = new bool[20, 20];
+            //check for prisoned fields
+            for (int q = -(fieldRadius); q <= fieldRadius; q++)
+            {
+                int r1 = Math.Max(-fieldRadius, -q - fieldRadius);
+                int r2 = Math.Min(fieldRadius, -q + fieldRadius);
+                for (int r = r1; r <= r2; r++)
+                {
+                    if (myField[r + fieldRadius, q + fieldRadius] == 1 || myField[r + fieldRadius, q + fieldRadius] == 2)
+                    {
+                        int y = r + fieldRadius;
+                        int x = q + fieldRadius;
+
+                        if (checkNeighbors(x, y, 0, 3) >= 1)
+                            prisoned[x,y] = false;
+                        else
+                            prisoned[x,y] = checkPrisonedRelatives(x, y);
+
+                        if (prisoned[x, y])
+                            win = 1;
+
+                    }
+                }
+            }
+            return win;
+        }
+
+        public bool checkPrisonedRelatives(int x, int y)
+        {
+            return false;
         }
 
         public bool makeMove(int r, int q)
