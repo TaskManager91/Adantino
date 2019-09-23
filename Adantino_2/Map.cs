@@ -29,7 +29,7 @@ namespace Adantino_2
                         int x = q + fieldRadius;
 
                         //check if at least two neighbors are set
-                        int checker = checkNeighbors(x, y, 1, 2);
+                        int checker = checkNeighbors(y, x, 1, 2);
 
                         if (checker >= 2)
                             myField[r + fieldRadius, q + fieldRadius] = 3;
@@ -40,7 +40,7 @@ namespace Adantino_2
             }
         }
 
-        public int checkNeighbors(int x, int y, int typeOne, int typeTwo)
+        public int checkNeighbors(int y, int x, int typeOne, int typeTwo)
         {
             int i = 0;
 
@@ -74,7 +74,9 @@ namespace Adantino_2
         public int checkWin()
         {
             int win = 0;
+            bool[,] visited = new bool[20, 20];
             bool[,] prisoned = new bool[20, 20];
+
             //check for prisoned fields
             for (int q = -(fieldRadius); q <= fieldRadius; q++)
             {
@@ -87,22 +89,56 @@ namespace Adantino_2
                         int y = r + fieldRadius;
                         int x = q + fieldRadius;
 
-                        if (checkNeighbors(x, y, 0, 3) >= 1)
-                            prisoned[x,y] = false;
-                        else
-                            prisoned[x,y] = checkPrisonedRelatives(x, y);
-
-                        if (prisoned[x, y])
-                            win = 1;
-
+                        if(visited[y,x] == false)
+                        {
+                            prisoned[y, x] = CheckPrisonedRelatives(y, x, visited, prisoned);
+                        }
                     }
                 }
             }
             return win;
         }
 
-        public bool checkPrisonedRelatives(int x, int y)
+        public bool CheckPrisonedRelatives(int y, int x, bool[,] visited, bool[,] prisoned)
         {
+
+            int freeFields = 0;
+            int myType = myField[y, x];
+            visited[y, x] = true;
+
+            if (checkNeighbors(y, x, 3, 99) >= 1)
+            {
+                //found free field -> finish
+                return false;
+            }
+            else
+            {
+                //check Relatives
+                if (y + 1 <= 20)
+                    if (myField[y + 1, x] == myType)
+                        prisoned[y, x] = CheckPrisonedRelatives(y, x, visited, prisoned);
+
+                if (y + 1 <= 20 && x - 1 >= 0)
+                    if (myField[y + 1, x - 1] == myType)
+                        freeFields++;
+
+                if (x - 1 >= 0)
+                    if (myField[y, x - 1] == myType)
+                        freeFields++;
+
+                if (x + 1 >= 0)
+                    if (myField[y, x + 1] == myType)
+                        freeFields++;
+
+                if (y - 1 >= 0)
+                    if (myField[y - 1, x] == myType)
+                        freeFields++;
+
+                if (x + 1 <= 20 && y - 1 >= 0)
+                    if (myField[y - 1, x + 1] == myType)
+                        freeFields++;
+            }
+
             return false;
         }
 
@@ -110,6 +146,7 @@ namespace Adantino_2
         {
             if (myField[(int)r + fieldRadius, (int)q + fieldRadius] != 3)
             {
+                //Invalid move! -> not playable
                 return false;
             }
             else
@@ -124,6 +161,8 @@ namespace Adantino_2
                     myField[(int)r + fieldRadius, (int)q + fieldRadius] = 2;
                     Console.WriteLine("Pos: " + ((int)q + fieldRadius) + " ; " + ((int)r + fieldRadius) + " set to Red");
                 }
+
+                //Check the Field again for possible moves
                 checkPosMoves();
 
                 //Make a deep copy
@@ -149,9 +188,9 @@ namespace Adantino_2
             //filling the Array with -1
             for (int i = 0; i < 20; i++)
             {
-                for (int y = 0; y < 20; y++)
+                for (int j = 0; j < 20; j++)
                 {
-                    myField[y, i] = -1;
+                    myField[j, i] = -1;
                 }
             }
 
