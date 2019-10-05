@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -165,6 +166,7 @@ namespace Adantino_2
                     sf.LineAlignment = StringAlignment.Center;
                     sf.Alignment = StringAlignment.Center;
                     g.DrawString((q + fieldRadius) + ";" + (r + fieldRadius), this.Font, Brushes.Green, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                    Thread.Sleep(15);
 
                 }
             }
