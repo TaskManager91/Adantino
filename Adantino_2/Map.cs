@@ -71,6 +71,50 @@ namespace Adantino_2
             return i;
         }
 
+        public int alphaBeta(int q, int r, int depth, int alpha, int beta, bool player)
+        {
+            if(depth == 0)
+            {
+                return evalPos(q, r);
+            }
+
+            if(player)
+            {
+                int maxEval = -1000000;
+                int eval = 0;
+                //for each child
+                eval = alphaBeta(q, r, depth - 1, alpha, beta, !player);
+                maxEval = Math.Max(alpha, eval);
+                if (beta <= alpha)
+                {
+                    //prune
+                }
+
+                return maxEval;
+            }
+            else
+            {
+                int minEval = 1000000;
+                int eval = 0;
+                //for each child
+                eval = alphaBeta(q, r, depth - 1, alpha, beta, !player);
+                minEval = Math.Max(alpha, eval);
+                if (beta <= alpha)
+                {
+                    //prune
+                }
+
+                return minEval;
+            }
+        }
+
+        public int evalPos(int q, int r)
+        {
+            int reward = 0;
+
+            return reward;
+        }
+
         public int checkWin()
         {
             int win = 0;
@@ -175,24 +219,27 @@ namespace Adantino_2
             if (bestrow >= 5)
             {
                 win = bestrowPlayer;
+                removePosMoves();
+            }
+                
+            return win;
+        }
 
-                //remove all possible moves / make unplayable
-                for (int q = -(fieldRadius); q <= fieldRadius; q++)
+        public void removePosMoves()
+        {
+            //remove all possible moves / make unplayable
+            for (int q = -(fieldRadius); q <= fieldRadius; q++)
+            {
+                int r1 = Math.Max(-fieldRadius, -q - fieldRadius);
+                int r2 = Math.Min(fieldRadius, -q + fieldRadius);
+                for (int r = r1; r <= r2; r++)
                 {
-                    int r1 = Math.Max(-fieldRadius, -q - fieldRadius);
-                    int r2 = Math.Min(fieldRadius, -q + fieldRadius);
-                    for (int r = r1; r <= r2; r++)
+                    if (myField[r + fieldRadius, q + fieldRadius] == 3)
                     {
-                        if (myField[r + fieldRadius, q + fieldRadius] == 3)
-                        {
-                            myField[r + fieldRadius, q + fieldRadius] = 0;
-                        }
+                        myField[r + fieldRadius, q + fieldRadius] = 0;
                     }
                 }
             }
-                
-
-            return win;
         }
 
         public bool CheckPrisonedRelatives(int y, int x, bool[,] visited, bool[,] prisoned)
