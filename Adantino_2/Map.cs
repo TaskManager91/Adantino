@@ -177,7 +177,6 @@ namespace Adantino_2
                 win = bestrowPlayer;
 
                 //remove all possible moves / make unplayable
-                //check for diagonal (\) 5 in a row 
                 for (int q = -(fieldRadius); q <= fieldRadius; q++)
                 {
                     int r1 = Math.Max(-fieldRadius, -q - fieldRadius);

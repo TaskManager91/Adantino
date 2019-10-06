@@ -237,6 +237,16 @@ namespace Adantino_2
             }
         }
 
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("Undo clicked");
+            if (myMap.moveCounter >= 1)
+            {
+                myMap.initField();
+                this.Refresh();
+            }
+        }
+
         private void label1_Click(object sender, EventArgs e)
         {
 
