@@ -44,14 +44,14 @@ namespace Adantino_2
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-            Console.WriteLine("Paint Panel 1");
+            //Console.WriteLine("Paint Panel 1");
             Graphics g = e.Graphics;
             drawField(g);
         }
 
         private void panel1_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("Click Panel 1");
+            //Console.WriteLine("Click Panel 1");
 
             Point curserPoint = panel1.PointToClient(Cursor.Position);
 
@@ -142,11 +142,11 @@ namespace Adantino_2
         public void drawField(Graphics g)
         {
            
-            for (int q = -(fieldRadius); q<= fieldRadius; q++)
+            for (int r = -(fieldRadius); r<= fieldRadius; r++)
             {
-                int r1 = Math.Max(-fieldRadius, -q- fieldRadius);
-                int r2 = Math.Min(fieldRadius, -q + fieldRadius);
-                for (int r = r1; r <= r2; r++)
+                int q1 = Math.Max(-fieldRadius, -r- fieldRadius);
+                int q2 = Math.Min(fieldRadius, -r + fieldRadius);
+                for (int q = q1; q <= q2; q++)
                 {
                     double coordX = fieldSize * (Math.Sqrt(3) * q + Math.Sqrt(3) / 2 * r);
                     double coordY = fieldSize * ((1.5f) * r);
@@ -177,6 +177,12 @@ namespace Adantino_2
                         // Draw ellipse to screen.
                         g.FillPolygon(myBrush, buffer);
                     }
+                    else if (bufferMap[r + fieldRadius, q + fieldRadius] == 4)
+                    {
+                        SolidBrush myBrush = new SolidBrush(Color.Yellow);
+                        // Draw ellipse to screen.
+                        g.FillPolygon(myBrush, buffer);
+                    }
                     else
                     {
                         SolidBrush myBrush = new SolidBrush(Color.BurlyWood);
@@ -189,7 +195,7 @@ namespace Adantino_2
                     StringFormat sf = new StringFormat();
                     sf.LineAlignment = StringAlignment.Center;
                     sf.Alignment = StringAlignment.Center;
-                    //g.DrawString((q + fieldRadius) + ";" + (r + fieldRadius), this.Font, Brushes.Green, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                    g.DrawString((r + fieldRadius) + ";" + (q + fieldRadius), this.Font, Brushes.Green, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                     //Thread.Sleep(15);
                 }
             }
