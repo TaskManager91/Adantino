@@ -74,28 +74,125 @@ namespace Adantino_2
         public int checkWin()
         {
             int win = 0;
-            bool[,] visited = new bool[20, 20];
-            bool[,] prisoned = new bool[20, 20];
 
-            //check for prisoned fields
+            int currentPlayer = 0;
+            int bestrowPlayer = 0;
+
+            int row = 0;
+            int bestrow = 0;
+
+            //check for diagonal ( / ) 5 in a row 
+            for (int s = -(fieldRadius); s <= fieldRadius; s++)
+            {
+                int q1 = Math.Max(-fieldRadius, -s - fieldRadius);
+                int q2 = Math.Min(fieldRadius, -s + fieldRadius);
+                for (int q = q1; q <= q2; q++)
+                {
+                    int r = -(q) - (s);
+                    //just check Played fields
+                    if (myField[r + fieldRadius, q + fieldRadius] == 1 || myField[r + fieldRadius, q + fieldRadius] == 2)
+                    {
+                        if (myField[r + fieldRadius, q + fieldRadius] == currentPlayer)
+                        {
+                            row++;
+                        }
+                        else
+                        {
+                            row = 1;
+                            currentPlayer = myField[r + fieldRadius, q + fieldRadius];
+                        }
+
+                        if (row > bestrow)
+                        {
+                            bestrow = row;
+                            bestrowPlayer = currentPlayer;
+                        }
+                    }
+                }
+                row = 0;
+            }
+
+            //check for diagonal ( \ ) 5 in a row 
             for (int q = -(fieldRadius); q <= fieldRadius; q++)
             {
                 int r1 = Math.Max(-fieldRadius, -q - fieldRadius);
                 int r2 = Math.Min(fieldRadius, -q + fieldRadius);
                 for (int r = r1; r <= r2; r++)
                 {
+                    //just check Played fields
+                    if(myField[r + fieldRadius, q + fieldRadius] == 1 || myField[r + fieldRadius, q + fieldRadius] == 2)
+                    {
+                        if (myField[r + fieldRadius, q + fieldRadius] == currentPlayer)
+                        {
+                            row++;
+                        }
+                        else 
+                        {
+                            row = 1;
+                            currentPlayer = myField[r + fieldRadius, q + fieldRadius];
+                        }
+
+                        if (row > bestrow)
+                        {
+                            bestrow = row;
+                            bestrowPlayer = currentPlayer;
+                        }
+                    }
+                }
+                row = 0;
+            }
+
+            //check for horizontal ( - ) 5 in a row 
+            for (int r = -(fieldRadius); r <= fieldRadius; r++)
+            {
+                int q1 = Math.Max(-fieldRadius, -r - fieldRadius);
+                int q2 = Math.Min(fieldRadius, -r + fieldRadius);
+                for (int q = q1; q <= q2; q++)
+                {
+                    //just check Played fields
                     if (myField[r + fieldRadius, q + fieldRadius] == 1 || myField[r + fieldRadius, q + fieldRadius] == 2)
                     {
-                        int y = r + fieldRadius;
-                        int x = q + fieldRadius;
-
-                        if(visited[y,x] == false)
+                        if (myField[r + fieldRadius, q + fieldRadius] == currentPlayer)
                         {
-                            prisoned[y, x] = CheckPrisonedRelatives(y, x, visited, prisoned);
+                            row++;
+                        }
+                        else
+                        {
+                            row = 1;
+                            currentPlayer = myField[r + fieldRadius, q + fieldRadius];
+                        }
+
+                        if (row > bestrow)
+                        {
+                            bestrow = row;
+                            bestrowPlayer = currentPlayer;
+                        }
+                    }
+                }
+                row = 0;
+            }
+
+            if (bestrow >= 5)
+            {
+                win = bestrowPlayer;
+
+                //remove all possible moves / make unplayable
+                //check for diagonal (\) 5 in a row 
+                for (int q = -(fieldRadius); q <= fieldRadius; q++)
+                {
+                    int r1 = Math.Max(-fieldRadius, -q - fieldRadius);
+                    int r2 = Math.Min(fieldRadius, -q + fieldRadius);
+                    for (int r = r1; r <= r2; r++)
+                    {
+                        if (myField[r + fieldRadius, q + fieldRadius] == 3)
+                        {
+                            myField[r + fieldRadius, q + fieldRadius] = 0;
                         }
                     }
                 }
             }
+                
+
             return win;
         }
 
@@ -142,28 +239,33 @@ namespace Adantino_2
             return false;
         }
 
-        public bool makeMove(int r, int q)
+        public int makeMove(int r, int q)
         {
+            int win = -1;
+
             if (myField[(int)r + fieldRadius, (int)q + fieldRadius] != 3)
             {
                 //Invalid move! -> not playable
-                return false;
+                return win;
             }
             else
             {
                 if (black)
                 {
                     myField[(int)r + fieldRadius, (int)q + fieldRadius] = 1;
-                    Console.WriteLine("Pos: " + ((int)q + fieldRadius) + " ; " + ((int)r + fieldRadius) + " set to Black");
+                    Console.WriteLine("Pos: " + ((int)q + fieldRadius) + " ; " + ((int)r + fieldRadius) + " set to black");
                 }
                 else
                 {
                     myField[(int)r + fieldRadius, (int)q + fieldRadius] = 2;
-                    Console.WriteLine("Pos: " + ((int)q + fieldRadius) + " ; " + ((int)r + fieldRadius) + " set to Red");
+                    Console.WriteLine("Pos: " + ((int)q + fieldRadius) + " ; " + ((int)r + fieldRadius) + " set to white");
                 }
 
                 //Check the Field again for possible moves
                 checkPosMoves();
+
+                //Check the Field for 5 in row
+                win = checkWin();
 
                 //Make a deep copy
                 int[,] bufferField = myField.Clone() as int[,];
@@ -174,7 +276,7 @@ namespace Adantino_2
 
                 black = !black;
 
-                return true;
+                return win;
             }
         }
 

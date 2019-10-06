@@ -71,19 +71,37 @@ namespace Adantino_2
             q = roundedPoint.X;
             r = roundedPoint.Y;
 
-            if(myMap.makeMove((int)r, (int)q))
+            int win = myMap.makeMove((int)r, (int)q); // -1 invalid move, 0 normal move, 1 Black wins, 2 Red wins
+
+            if (win == 0)
             {
                 //move done
-                label1.Text = "";
+                if (myMap.black)
+                    label1.Text = "Blacks turn";
+                else
+                    label1.Text = "Reds turn";
+
                 button1.Visible = true;
+                this.Refresh();
+            }
+            else if (win == 1)
+            {
+                //Black wins
+                label1.Text = "Black wins!";
+                this.Refresh();
+            }
+            else if (win == 2)
+            {
+                //Red wins
+                label1.Text = "Red wins!";
                 this.Refresh();
             }
             else
             {
                 //invalid move
-                label1.Text = "Invalid move!";
+                label1.Text += " / Invalid move!";
                 this.Refresh();
-            }     
+            }
             /*
             g.DrawString("Clicked to Pos: " + curserPoint.X + " Y: " + curserPoint.Y, this.Font, Brushes.Black, 0f, 0f);
             g.DrawString("q: " + q, this.Font, Brushes.Black, 0f, 20f);
@@ -123,7 +141,7 @@ namespace Adantino_2
 
         public void drawField(Graphics g)
         {
-            
+           
             for (int q = -(fieldRadius); q<= fieldRadius; q++)
             {
                 int r1 = Math.Max(-fieldRadius, -q- fieldRadius);
@@ -159,15 +177,20 @@ namespace Adantino_2
                         // Draw ellipse to screen.
                         g.FillPolygon(myBrush, buffer);
                     }
+                    else
+                    {
+                        SolidBrush myBrush = new SolidBrush(Color.BurlyWood);
+                        // Draw ellipse to screen.
+                        g.FillPolygon(myBrush, buffer);
+                    }
 
                     g.DrawPolygon(myPen, buffer);
 
                     StringFormat sf = new StringFormat();
                     sf.LineAlignment = StringAlignment.Center;
                     sf.Alignment = StringAlignment.Center;
-                    g.DrawString((q + fieldRadius) + ";" + (r + fieldRadius), this.Font, Brushes.Green, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
-                    Thread.Sleep(15);
-
+                    //g.DrawString((q + fieldRadius) + ";" + (r + fieldRadius), this.Font, Brushes.Green, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                    //Thread.Sleep(15);
                 }
             }
         }
@@ -205,6 +228,12 @@ namespace Adantino_2
                 this.Refresh();
 
                 myMap.black = !myMap.black;
+
+                if (myMap.black)
+                    label1.Text = "Blacks turn";
+                else
+                    label1.Text = "Reds turn";
+
             }
         }
 
