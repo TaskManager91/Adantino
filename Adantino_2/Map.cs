@@ -77,10 +77,13 @@ namespace Adantino_2
         {
             if(depth == 0)
             {
-                return evalPos(scoreField);
+                if(black)
+                    return evalPos(scoreField, true);
+                else
+                    return evalPos(scoreField, false);
             }
 
-            Console.WriteLine("checking move: " + (move.r +fieldRadius) + ";" + (move.q + fieldRadius));
+            //Console.WriteLine("checking move: " + (move.r +fieldRadius) + ";" + (move.q + fieldRadius));
 
             if (black)
             {
@@ -154,7 +157,7 @@ namespace Adantino_2
             }
         }
 
-        public int evalPos(int[,] evalField)
+        public int evalPos(int[,] evalField, bool black)
         {
             int reward = 0;
 
@@ -256,14 +259,31 @@ namespace Adantino_2
             }
 
 
-            if (rbestrow >= 4 && bbestrow >= 4)
-                reward = 0;
-            else if (bbestrow >= 5)
-                reward = 10000000;
-            else if (rbestrow >= 5)
-                reward = -10000000;
-            else
-                reward = ((bbestrow * bbestrow) * 10 )- ((rbestrow * rbestrow) * 10);
+           
+
+            if ((rbestrow >= 5) && black)
+            {
+                reward = 1000000;
+                Console.WriteLine("preventing red to win");
+            }
+
+            if ((bbestrow >= 5) && !black)
+            {
+                reward = -1000000;
+                Console.WriteLine("preventing black to win");
+            }
+
+
+            if ((bbestrow >= 5) && black)
+            {
+                reward = 200;
+            }
+
+            if ((rbestrow >= 5) && !black)
+            {
+                reward = -200;
+            }
+
 
             //Console.WriteLine("Bestrow: " + bestrow + " for " + black);
 
@@ -472,7 +492,7 @@ namespace Adantino_2
                         evalField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 2;
 
 
-                    int score = alphaBeta(bufferMove, evalField, 5, -123456, 123456, black);
+                    int score = alphaBeta(bufferMove, evalField, 0, -123456, 123456, black);
 
                     Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) +" ; " + (bufferMove.q + fieldRadius) + " " + score);
 
