@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,7 @@ namespace Adantino_2
         public Form1(Map bufferMap)
         {
             InitializeComponent();
+            //this.DoubleBuffered = true;
             panel1.Paint += new PaintEventHandler(panel1_Paint);
             panel1.Click += new EventHandler(panel1_Click);
             Controls.Add(panel1);
@@ -75,7 +77,6 @@ namespace Adantino_2
 
             if (win == 0)
             {
-                label2.Text = "Move: " + myMap.moveCounter;
                 //move done
                 if (myMap.black)
                 {
@@ -150,7 +151,23 @@ namespace Adantino_2
 
         public void drawField(Graphics g)
         {
-           
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            Pen myPen = new Pen(Color.Blue, 1);
+
+            StringFormat sf = new StringFormat();
+            sf.LineAlignment = StringAlignment.Center;
+            sf.Alignment = StringAlignment.Center;
+
+            int[,] bufferMap = myMap.myField;
+
+            SolidBrush blackBrush = new SolidBrush(Color.Black);
+            SolidBrush redBrush = new SolidBrush(Color.Red);
+            SolidBrush goldBrush = new SolidBrush(Color.Goldenrod);
+            SolidBrush greyBrush = new SolidBrush(Color.Gray);
+            SolidBrush brownBrush = new SolidBrush(Color.BurlyWood);
+
             for (int r = -(fieldRadius); r<= fieldRadius; r++)
             {
                 int q1 = Math.Max(-fieldRadius, -r- fieldRadius);
@@ -164,50 +181,50 @@ namespace Adantino_2
                     coordY += (panel1.Height / 2);
 
                     PointF[] buffer = GetDrawPoints((float)coordX, (float)coordY, (int)fieldSize);
-                    
-                    Pen myPen = new Pen(Color.Blue, 1);
-                    int[,] bufferMap = myMap.myField;
-    
+
                     if(bufferMap[r+fieldRadius,q+fieldRadius] == 1)
                     {
-                        SolidBrush myBrush = new SolidBrush(Color.Black);
                         // Draw ellipse to screen.
-                        g.FillPolygon(myBrush, buffer);
+                        g.FillPolygon(blackBrush, buffer);
                     }
                     else if (bufferMap[r + fieldRadius, q+fieldRadius] == 2)
                     {
-                        SolidBrush myBrush = new SolidBrush(Color.Red);
                         // Draw ellipse to screen.
-                        g.FillPolygon(myBrush, buffer);
+                        g.FillPolygon(redBrush, buffer);
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 3)
                     {
-                        SolidBrush myBrush = new SolidBrush(Color.Gray);
+                        
                         // Draw ellipse to screen.
-                        g.FillPolygon(myBrush, buffer);
+                        g.FillPolygon(greyBrush, buffer);
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 4)
                     {
-                        SolidBrush myBrush = new SolidBrush(Color.Goldenrod);
+                        
                         // Draw ellipse to screen.
-                        g.FillPolygon(myBrush, buffer);
+                        g.FillPolygon(goldBrush, buffer);
                     }
                     else
                     {
-                        SolidBrush myBrush = new SolidBrush(Color.BurlyWood);
                         // Draw ellipse to screen.
-                        g.FillPolygon(myBrush, buffer);
+                        g.FillPolygon(brownBrush, buffer);
                     }
 
                     g.DrawPolygon(myPen, buffer);
 
-                    StringFormat sf = new StringFormat();
-                    sf.LineAlignment = StringAlignment.Center;
-                    sf.Alignment = StringAlignment.Center;
                     g.DrawString((r + fieldRadius) + ";" + (q + fieldRadius), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                     //Thread.Sleep(15);
                 }
             }
+
+            stopwatch.Stop();
+            TimeSpan stopwatchElapsed = stopwatch.Elapsed;
+            int time = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
+
+            label2.Text = "Move: " + myMap.moveCounter;
+            label3.Text = "AI depth: " + myMap.aiDepth;
+            label4.Text = "Rendertime: " + time + " ms";
+
         }
 
         public PointF[] GetDrawPoints(float x, float y, int size)
@@ -280,13 +297,23 @@ namespace Adantino_2
             //this.Refresh();
         }
 
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
-        {
-            myMap.aiTwo = !myMap.aiTwo;
-            //this.Refresh();
-        }
 
         private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox2_CheckedChanged_1(object sender, EventArgs e)
+        {
+            myMap.aiTwo = !myMap.aiTwo;
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
         {
 
         }

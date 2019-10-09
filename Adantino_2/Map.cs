@@ -29,8 +29,8 @@ namespace Adantino_2
             moveList = new List<int[,]>();
             moveCounter = 0;
             black = false;
-            aiOne = false;
-            aiTwo = false;
+            aiOne = true;
+            aiTwo = true;
 
             //filling the Array with -1
             for (int i = 0; i < 20; i++)
@@ -694,7 +694,7 @@ namespace Adantino_2
                 {
                     removeMoves(3);
                 }  
-                else if((black && aiOne) || (!black && aiTwo))
+                else 
                 {
                     // START AlphaBeta
 
@@ -733,7 +733,7 @@ namespace Adantino_2
                         bool bBuffer = !black;
 
                         int score = 0; 
-                        score = alphaBeta(bufferMove, evalField, 8, -9999, 9999, bBuffer);
+                        score = alphaBeta(bufferMove, evalField, aiDepth, -9999, 9999, bBuffer);
 
                         if (black)
                         {
