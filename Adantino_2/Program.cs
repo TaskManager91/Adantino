@@ -19,7 +19,6 @@ namespace Adantino_2
             Map myMap = new Map();
             myMap.initField();
 
-            Console.WriteLine("Hallo welt!");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1(myMap));

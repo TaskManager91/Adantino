@@ -61,7 +61,7 @@ namespace Adantino_2
                 if (checkPos[y, x - 1] == type)
                     i++;
 
-            if (x + 1 >= 0)
+            if (x + 1 <= 20)
                 if (checkPos[y, x + 1] == type)
                     i++;
 
@@ -386,7 +386,9 @@ namespace Adantino_2
             if (rBestRow >= 5)
                 return 2;
 
-            win = checkPrisoners(checkField);
+            int[,] bufferField = new int[20, 20];
+            bufferField = checkField.Clone() as int[,];
+            win = checkPrisoners(bufferField);
                 
             return win;
         }
@@ -394,8 +396,6 @@ namespace Adantino_2
         public int checkPrisoners(int[,] checkField)
         {
             int win = 0;
-            int[,] bufferField = new int[20, 20];
-            bufferField = checkField.Clone() as int[,];
 
             for (int r = -(fieldRadius); r <= fieldRadius; r++)
             {
@@ -403,12 +403,172 @@ namespace Adantino_2
                 int q2 = Math.Min(fieldRadius, -r + fieldRadius);
                 for (int q = q1; q <= q2; q++)
                 {
-                    
+                    if(checkField[r+fieldRadius, q+fieldRadius] == 1 || checkField[r + fieldRadius, q + fieldRadius] == 2)
+                    {
+                        int currentPlayer = checkField[r + fieldRadius, q + fieldRadius];
+                        //check if at least one neighbor is free
+                        int checker = 0;
+                        checker += checkNeighbors(r + fieldRadius, q + fieldRadius, 0, checkField);
+                        
+                        if (checker == 0)
+                            checker += checkNeighbors(r + fieldRadius, q + fieldRadius, 3, checkField);
+
+                        if (checker == 0)
+                            checker += checkNeighbors(r + fieldRadius, q + fieldRadius, 4, checkField);
+
+                        if (checker == 0 && currentPlayer == 1)
+                            checker += checkNeighbors(r + fieldRadius, q + fieldRadius, 5, checkField);
+
+                        if (checker == 0 && currentPlayer == 2)
+                            checker += checkNeighbors(r + fieldRadius, q + fieldRadius, 6, checkField);
+
+                        //Console.WriteLine("FREE Fields: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " " + checker);
+
+                        //Jaay, free field => set to 5
+                        if (checker > 0)
+                        {
+                            if (currentPlayer == 1)
+                                checkField[r + fieldRadius, q + fieldRadius] = 5; //Black free field
+                            else
+                                checkField[r + fieldRadius, q + fieldRadius] = 6; //Red free field
+                        }                            
+                        else
+                        {
+                            checkField[r + fieldRadius, q + fieldRadius] = 99; //Field checked -> ignore in deeper steps to prevent stack overflow
+
+                            checker = checkPrisonersHelper(r + fieldRadius, q + fieldRadius, checkField, currentPlayer);
+                        }
+                            
+
+                        if (checker == 0)
+                        {
+                            Console.WriteLine("Fields CAPTURED: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " " + checker);
+                            if (currentPlayer == 1)
+                                return 2;
+                            else
+                                return 1;
+                        } 
+                        else
+                        {
+                            if (currentPlayer == 1)
+                                checkField[r + fieldRadius, q + fieldRadius] = 5;
+                            else
+                                checkField[r + fieldRadius, q + fieldRadius] = 6;
+                        }
+                          
+                    }
                 }
             }
+            return win;
+        }
 
+        public int checkPrisonersHelper(int r, int q, int[,] checkField, int currentPlayer)
+        {
+            Console.WriteLine("need to dig deeper!");
+            //int currentPlayer = checkField[r, q];
+
+            int win = 0;
+
+            List<Move> myNeighbors = new List<Move>();
+
+            myNeighbors = getMyNeighbors(r, q, checkField, currentPlayer);
+
+            Console.WriteLine("R,q: " + r + " " + q + " checking count of neighbors: " + myNeighbors.Count);
+
+            for(int i=0; i<myNeighbors.Count; i++)
+            {
+                
+                Move move = myNeighbors.ElementAt(i);
+                Console.WriteLine("Checking Neighbor (r,q): " + move.r + " " + move.q);
+                //check if at least one neighbor of Neighbor is free
+                int checker = 0;
+                checker += checkNeighbors(move.r, move.q, 0, checkField);
+
+                if (checker == 0)
+                    checker += checkNeighbors(move.r, move.q, 3, checkField);
+
+                if (checker == 0)
+                    checker += checkNeighbors(move.r, move.q, 4, checkField);
+
+                if (checker == 0 && currentPlayer == 1)
+                    checker += checkNeighbors(r, q, 5, checkField);
+
+                if (checker == 0 && currentPlayer == 2)
+                    checker += checkNeighbors(r, q, 6, checkField);
+
+                //Jaay, free field => set to 5 for black or 6 for Red (checked and free) else dig deeper
+                if (checker > 0)
+                {
+                    return 1;
+                }
+                else
+                {
+                    Console.WriteLine("Neighbor (r,q): " + move.r + " " + move.q + " is also trapped going even deeper");
+                    checkField[r, q] = 99; //Field checked -> ignore in deeper steps to prevent stack overflow
+                    checker = checkPrisonersHelper(move.r, move.q, checkField, currentPlayer);
+                }
+
+                if (checker > 0)
+                    return 1;
+                else
+                    return 0;       
+            }
 
             return win;
+        }
+
+        public List<Move> getMyNeighbors(int rBuffer, int qBuffer, int[,] checkField, int currentPlayer)
+        {
+            List<Move> myNeighbors = new List<Move>();
+
+            int y = rBuffer;
+            int x = qBuffer;
+
+            int myType = currentPlayer;
+
+            if (y + 1 <= 20)
+                if (checkField[y + 1, x] == myType)
+                {
+                    Move move = new Move(y + 1, x);
+                    myNeighbors.Add(move);
+                }
+                    
+            if (y + 1 <= 20 && x - 1 >= 0)
+                if (checkField[y + 1, x - 1] == myType)
+                {
+                    Move move = new Move(y + 1, x -1);
+                    myNeighbors.Add(move);
+                }
+
+            if (x - 1 >= 0)
+                if (checkField[y, x - 1] == myType)
+                {
+                    Move move = new Move(y, x - 1);
+                    myNeighbors.Add(move);
+                }
+
+            if (x + 1 <= 20)
+                if (checkField[y, x + 1] == myType)
+                {
+                    Move move = new Move(y, x+1);
+                    myNeighbors.Add(move);
+                }
+
+            if (y - 1 >= 0)
+                if (checkField[y - 1, x] == myType)
+                {
+                    Move move = new Move(y - 1, x);
+                    myNeighbors.Add(move);
+                }
+
+            if (x + 1 <= 20 && y - 1 >= 0)
+                if (checkField[y - 1, x + 1] == myType)
+                {
+                    Move move = new Move(y - 1, x + 1);
+                    myNeighbors.Add(move);
+                }
+
+            return myNeighbors;
         }
 
         public void removeMoves(int what)
@@ -464,22 +624,24 @@ namespace Adantino_2
                 if (black)
                 {
                     myField[r + fieldRadius, q + fieldRadius] = 1;
-                    Console.WriteLine("Pos: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " set to black");
+                    Console.WriteLine("SET POS: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " set to black");
                 }
                 else
                 {
                     myField[r + fieldRadius, q + fieldRadius] = 2;
-                    Console.WriteLine("Pos: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " set to red");
+                    Console.WriteLine("SET POS: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " set to red");
                 }
+                //Check the field for possible moves
+                myField = checkPosMoves(myField);
+
+                //Check for winner
+                win = checkWin(myField);
 
                 //remove last recommondation
                 removeMoves(4);
 
                 //Next players turn!!
                 black = !black;
-
-                //Check the field for 5 in row
-                win = checkWin(myField);
 
                 if (win == 1 || win == 2)
                 {
@@ -488,9 +650,6 @@ namespace Adantino_2
                 else
                 {
                     // START AlphaBeta
-
-                    //Check the field for possible moves
-                    myField = checkPosMoves(myField);
 
                     //Get all possible moves in an List
                     List<Move> posMovesList = getPosMoves(myField);
@@ -527,7 +686,7 @@ namespace Adantino_2
                         bool bBuffer = !black;
 
                         int score = 0; 
-                        score = alphaBeta(bufferMove, evalField, 5, -9999, 9999, bBuffer);
+                        score = alphaBeta(bufferMove, evalField, 4, -9999, 9999, bBuffer);
 
                         if (black)
                         {
