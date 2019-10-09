@@ -12,10 +12,57 @@ namespace Adantino_2
         const int fieldRadius = 9;    //Field radius in each direction 
 
         public bool black { get; set; }
+
+        public bool aiOne { get; set; }
+        public bool aiTwo { get; set; }
+
+        public int aiDepth { get; set; }
+
         public int[,] myField { get; set; }
         public List<int[,]> moveList { get; set; }
         public int moveCounter { get; set; }
 
+        public void initField()
+        {
+            aiDepth = 4;
+            myField = new int[20, 20];
+            moveList = new List<int[,]>();
+            moveCounter = 0;
+            black = false;
+            aiOne = false;
+            aiTwo = false;
+
+            //filling the Array with -1
+            for (int i = 0; i < 20; i++)
+            {
+                for (int j = 0; j < 20; j++)
+                {
+                    myField[j, i] = -1;
+                }
+            }
+
+            //filling the "playable" field with 0
+            for (int q = -(fieldRadius); q <= fieldRadius; q++)
+            {
+                int r1 = Math.Max(-fieldRadius, -q - fieldRadius);
+                int r2 = Math.Min(fieldRadius, -q + fieldRadius);
+                for (int r = r1; r <= r2; r++)
+                {
+                    myField[r + fieldRadius, q + fieldRadius] = 0;
+                }
+            }
+
+            //startPosition
+            myField[9, 9] = 1;
+            myField[8, 10] = myField[8, 9] = myField[9, 8] = myField[10, 8] = myField[9, 10] = 3;
+            myField[10, 9] = 4;
+
+            //Make a deep copy
+            int[,] bufferField = myField.Clone() as int[,];
+
+            //add start Position to moveList
+            moveList.Add(bufferField);
+        }
         public int[,] checkPosMoves(int[,] checkPos)
         {
             for (int q = -(fieldRadius); q <= fieldRadius; q++)
@@ -442,7 +489,7 @@ namespace Adantino_2
 
                         if (checker == 0)
                         {
-                            Console.WriteLine("Fields CAPTURED: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " " + checker);
+                            //Console.WriteLine("Fields CAPTURED: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " " + checker);
                             if (currentPlayer == 1)
                                 return 2;
                             else
@@ -464,7 +511,7 @@ namespace Adantino_2
 
         public int checkPrisonersHelper(int r, int q, int[,] checkField, int currentPlayer)
         {
-            Console.WriteLine("need to dig deeper!");
+            //Console.WriteLine("need to dig deeper!");
             //int currentPlayer = checkField[r, q];
 
             int win = 0;
@@ -473,13 +520,13 @@ namespace Adantino_2
 
             myNeighbors = getMyNeighbors(r, q, checkField, currentPlayer);
 
-            Console.WriteLine("R,q: " + r + " " + q + " checking count of neighbors: " + myNeighbors.Count);
+            //Console.WriteLine("R,q: " + r + " " + q + " checking count of neighbors: " + myNeighbors.Count);
 
             for(int i=0; i<myNeighbors.Count; i++)
             {
                 
                 Move move = myNeighbors.ElementAt(i);
-                Console.WriteLine("Checking Neighbor (r,q): " + move.r + " " + move.q);
+                //Console.WriteLine("Checking Neighbor (r,q): " + move.r + " " + move.q);
                 //check if at least one neighbor of Neighbor is free
                 int checker = 0;
                 checker += checkNeighbors(move.r, move.q, 0, checkField);
@@ -503,7 +550,7 @@ namespace Adantino_2
                 }
                 else
                 {
-                    Console.WriteLine("Neighbor (r,q): " + move.r + " " + move.q + " is also trapped going even deeper");
+                    //Console.WriteLine("Neighbor (r,q): " + move.r + " " + move.q + " is also trapped going even deeper");
                     checkField[r, q] = 99; //Field checked -> ignore in deeper steps to prevent stack overflow
                     checker = checkPrisonersHelper(move.r, move.q, checkField, currentPlayer);
                 }
@@ -647,7 +694,7 @@ namespace Adantino_2
                 {
                     removeMoves(3);
                 }  
-                else
+                else if((black && aiOne) || (!black && aiTwo))
                 {
                     // START AlphaBeta
 
@@ -686,7 +733,7 @@ namespace Adantino_2
                         bool bBuffer = !black;
 
                         int score = 0; 
-                        score = alphaBeta(bufferMove, evalField, 4, -9999, 9999, bBuffer);
+                        score = alphaBeta(bufferMove, evalField, 8, -9999, 9999, bBuffer);
 
                         if (black)
                         {
@@ -729,45 +776,7 @@ namespace Adantino_2
             }
         }
 
-        public void initField()
-        {
-            myField = new int[20, 20];
-            moveList = new List<int[,]>();
-            moveCounter = 0;
-            black = false;
 
-            //filling the Array with -1
-            for (int i = 0; i < 20; i++)
-            {
-                for (int j = 0; j < 20; j++)
-                {
-                    myField[j, i] = -1;
-                }
-            }
-
-            //filling the "playable" field with 0
-            for (int q = -(fieldRadius); q <= fieldRadius; q++)
-            {
-                int r1 = Math.Max(-fieldRadius, -q - fieldRadius);
-                int r2 = Math.Min(fieldRadius, -q + fieldRadius);
-                for (int r = r1; r <= r2; r++)
-                {
-                    myField[r + fieldRadius, q + fieldRadius] = 0;
-                }
-            }
-
-            //startPosition
-            myField[9, 9] = 1;
-            myField[8, 10] = myField[8, 9] = myField[9, 8] = myField[10, 8] = myField[10, 9] = myField[9, 10] = 3;
-
-            //Make a deep copy
-            int[,] bufferField = myField.Clone() as int[,];
-
-            //add start Position to moveList
-            moveList.Add(bufferField);
-        }
-
-            
     }
 
 }

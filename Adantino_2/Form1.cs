@@ -75,11 +75,18 @@ namespace Adantino_2
 
             if (win == 0)
             {
+                label2.Text = "Move: " + myMap.moveCounter;
                 //move done
                 if (myMap.black)
+                {
+                    label1.ForeColor = Color.Black;
                     label1.Text = "Blacks turn";
+                }
                 else
+                {
+                    label1.ForeColor = Color.Red;
                     label1.Text = "Reds turn";
+                }
 
                 button1.Visible = true;
                 this.Refresh();
@@ -87,12 +94,14 @@ namespace Adantino_2
             else if (win == 1)
             {
                 //Black wins
+                label1.ForeColor = Color.Black;
                 label1.Text = "Black wins!";
                 this.Refresh();
             }
             else if (win == 2)
             {
                 //Red wins
+                label1.ForeColor = Color.Red;
                 label1.Text = "Red wins!";
                 this.Refresh();
             }
@@ -179,7 +188,7 @@ namespace Adantino_2
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 4)
                     {
-                        SolidBrush myBrush = new SolidBrush(Color.Yellow);
+                        SolidBrush myBrush = new SolidBrush(Color.Goldenrod);
                         // Draw ellipse to screen.
                         g.FillPolygon(myBrush, buffer);
                     }
@@ -195,7 +204,7 @@ namespace Adantino_2
                     StringFormat sf = new StringFormat();
                     sf.LineAlignment = StringAlignment.Center;
                     sf.Alignment = StringAlignment.Center;
-                    g.DrawString((r + fieldRadius) + ";" + (q + fieldRadius), this.Font, Brushes.Green, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                    g.DrawString((r + fieldRadius) + ";" + (q + fieldRadius), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                     //Thread.Sleep(15);
                 }
             }
@@ -231,21 +240,28 @@ namespace Adantino_2
                     button1.Visible = false;
                 }
 
-                this.Refresh();
-
                 myMap.black = !myMap.black;
 
-                if (myMap.black)
-                    label1.Text = "Blacks turn";
-                else
-                    label1.Text = "Reds turn";
+                label2.Text = "Move: " + myMap.moveCounter;
 
+                if (myMap.black)
+                {
+                    label1.ForeColor = Color.Black;
+                    label1.Text = "Blacks turn";
+                }
+                else
+                {
+                    label1.ForeColor = Color.Red;
+                    label1.Text = "Reds turn";
+                }
+
+                this.Refresh();
             }
         }
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("Undo clicked");
+            Console.WriteLine("Restart clicked");
             if (myMap.moveCounter >= 1)
             {
                 myMap.initField();
@@ -254,6 +270,23 @@ namespace Adantino_2
         }
 
         private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            myMap.aiOne = !myMap.aiOne;
+            //this.Refresh();
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            myMap.aiTwo = !myMap.aiTwo;
+            //this.Refresh();
+        }
+
+        private void label2_Click(object sender, EventArgs e)
         {
 
         }
