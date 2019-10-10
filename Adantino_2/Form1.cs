@@ -223,6 +223,7 @@ namespace Adantino_2
 
             label2.Text = "Move: " + myMap.moveCounter;
             label3.Text = "AI depth: " + myMap.aiDepth;
+            label5.Text = "AI time: " + myMap.aiTime + " ms";
             label4.Text = "Rendertime: " + time + " ms";
 
         }
@@ -316,6 +317,27 @@ namespace Adantino_2
         private void label4_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            myMap.aiDepth++;
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            // START AlphaBeta
+            myMap.alphaBetaStart();
+
+            stopwatch.Stop();
+            TimeSpan stopwatchElapsed = stopwatch.Elapsed;
+            myMap.aiTime = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
+            this.Refresh();
         }
     }
 }

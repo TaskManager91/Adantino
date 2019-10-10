@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,13 +19,15 @@ namespace Adantino_2
 
         public int aiDepth { get; set; }
 
+        public int aiTime { get; set; }
+
         public int[,] myField { get; set; }
         public List<int[,]> moveList { get; set; }
         public int moveCounter { get; set; }
 
         public void initField()
         {
-            aiDepth = 4;
+            aiDepth = 0;
             myField = new int[20, 20];
             moveList = new List<int[,]>();
             moveCounter = 0;
@@ -132,11 +135,11 @@ namespace Adantino_2
 
             if (win == 2)
                return -2000;
-    
-            Random random = new Random();
 
+            
             if (depth == 0)
                 return evalPos(scoreField);
+                
 
             //return evalPos(scoreField);
 
@@ -245,7 +248,13 @@ namespace Adantino_2
                 rrow = 0;
                 brow = 0;
             }
-            
+
+            /*
+            if (rbestrow > bbestrow)
+                reward += -100;
+            else if (rbestrow < bbestrow)
+                reward += 100;
+                */
 
             //check for diagonal ( \ ) row 
             for (int q = -(fieldRadius); q <= fieldRadius; q++)
@@ -277,6 +286,13 @@ namespace Adantino_2
                 brow = 0;
             }
 
+            /*
+            if (rbestrow > bbestrow)
+                reward += -100;
+            else if (rbestrow < bbestrow)
+                reward += 100;
+                */
+
             //check for horizontal ( - ) row 
             for (int r = -(fieldRadius); r <= fieldRadius; r++)
             {
@@ -307,9 +323,9 @@ namespace Adantino_2
             }
 
             if (rbestrow > bbestrow)
-                reward = -1000;
+                reward += -100;
             else if (rbestrow < bbestrow)
-                reward = 1000;
+                reward += 100;
 
             //Console.WriteLine("Bestrow: " + bestrow + " for " + black);
 
@@ -678,14 +694,15 @@ namespace Adantino_2
                     myField[r + fieldRadius, q + fieldRadius] = 2;
                     Console.WriteLine("SET POS: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " set to red");
                 }
+
+                //remove last recommondation
+                removeMoves(4);
+
                 //Check the field for possible moves
                 myField = checkPosMoves(myField);
 
                 //Check for winner
                 win = checkWin(myField);
-
-                //remove last recommondation
-                removeMoves(4);
 
                 //Next players turn!!
                 black = !black;
@@ -696,73 +713,20 @@ namespace Adantino_2
                 }  
                 else 
                 {
+                    aiDepth = 6;
+
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+
                     // START AlphaBeta
+                    alphaBetaStart();
 
-                    //Get all possible moves in an List
-                    List<Move> posMovesList = getPosMoves(myField);
+                    stopwatch.Stop();
+                    TimeSpan stopwatchElapsed = stopwatch.Elapsed;
+                    aiTime = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
 
-                    if (black)
-                        Console.WriteLine("Possible moves for black: " + posMovesList.Count);
-                    else
-                        Console.WriteLine("Possible moves for red: " + posMovesList.Count);
-
-                    int highScore = 0;
-
-                    if (black)
-                        highScore = -1500;
-                    else
-                        highScore = 1500;
-
-                    Move bestMove = new Move(0, 0);
-
-                    for(int i = 0; i< posMovesList.Count; i++)
-                    {
-                        Move bufferMove = new Move(0, 0);
-                        bufferMove = posMovesList.ElementAt(i);
-
-                        //Make a deep copy
-                        int[,] evalField = new int[20, 20];
-                        evalField = myField.Clone() as int[,];
-
-                        if (black)
-                            evalField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 1;
-                        else
-                            evalField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 2;
-
-                        //Move Played so other player
-                        bool bBuffer = !black;
-
-                        int score = 0; 
-                        score = alphaBeta(bufferMove, evalField, aiDepth, -9999, 9999, bBuffer);
-
-                        if (black)
-                        {
-                            if (score >= highScore)
-                            {
-                                //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + score);
-                                highScore = score;
-                                bestMove = bufferMove;
-                            }
-
-                        }
-                        else
-                        {
-                            if (score <= highScore)
-                            {
-                                //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + score);
-                                highScore = score;
-                                bestMove = bufferMove;
-                            }
-                        }
-                    }
-
-                    if (black && highScore == -1500)
-                        highScore = -1500; // Enemy won -> no suggestion
-                    else if(!black && highScore == 1500)
-                        highScore = 1500; // Enemy won -> no suggestion
-                    else
-                        myField[(bestMove.r + fieldRadius), (bestMove.q + fieldRadius)] = 4;
                 }
+                    
                     
 
                 //Make a deep copy
@@ -774,6 +738,80 @@ namespace Adantino_2
 
                 return win;
             }
+        }
+
+        public void alphaBetaStart()
+        {
+            //remove last recommondation
+            removeMoves(4);
+
+            //Check the field for possible moves
+            myField = checkPosMoves(myField);
+
+            //Get all possible moves in an List
+            List<Move> posMovesList = getPosMoves(myField);
+
+            if (black)
+                Console.WriteLine("Possible moves for black: " + posMovesList.Count);
+            else
+                Console.WriteLine("Possible moves for red: " + posMovesList.Count);
+
+            int highScore = 0;
+
+            if (black)
+                highScore = -1500;
+            else
+                highScore = 1500;
+
+            Move bestMove = new Move(0, 0);
+
+            for (int i = 0; i < posMovesList.Count; i++)
+            {
+                Move bufferMove = new Move(0, 0);
+                bufferMove = posMovesList.ElementAt(i);
+
+                //Make a deep copy
+                int[,] evalField = new int[20, 20];
+                evalField = myField.Clone() as int[,];
+
+                if (black)
+                    evalField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 1;
+                else
+                    evalField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 2;
+
+                //Move Played so other player
+                bool bBuffer = !black;
+
+                int score = 0;
+                score = alphaBeta(bufferMove, evalField, aiDepth, -9999, 9999, bBuffer);
+
+                if (black)
+                {
+                    if (score >= highScore)
+                    {
+                        //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + score);
+                        highScore = score;
+                        bestMove = bufferMove;
+                    }
+
+                }
+                else
+                {
+                    if (score <= highScore)
+                    {
+                        //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + score);
+                        highScore = score;
+                        bestMove = bufferMove;
+                    }
+                }
+            }
+
+            if (black && highScore == -1500)
+                highScore = -1500; // Enemy won -> no suggestion
+            else if (!black && highScore == 1500)
+                highScore = 1500; // Enemy won -> no suggestion
+            else
+                myField[(bestMove.r + fieldRadius), (bestMove.q + fieldRadius)] = 4;
         }
 
 
