@@ -156,21 +156,18 @@ namespace Adantino_2
 
                 for (int i = 0; i < posAB.Count; i++)
                 {
-                    Move bufferMove = new Move(0, 0);
-                    bufferMove = posAB.ElementAt(i);
+                    Move bufferMove = posAB.ElementAt(i);
 
                     //Make a deep copy
-                    int[,] bufferField = new int[20, 20];
+                    int[,] bufferField = new int[20,20];
                     bufferField = scoreField.Clone() as int[,];
 
                     bufferField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 1;
 
                     eval = alphaBeta(bufferMove, bufferField, depth - 1, alpha, beta, false);
 
-                    //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + eval);
-
+                    //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + eval)
                     maxEval = Math.Max(maxEval, eval);
-
                     alpha = Math.Max(alpha, eval);
                     if (beta <= alpha)
                         break;
@@ -188,8 +185,7 @@ namespace Adantino_2
                 int eval = 0;
                 for (int i = 0; i < posAB.Count; i++)
                 {
-                    Move bufferMove = new Move(0, 0);
-                    bufferMove = posAB.ElementAt(i);
+                    Move bufferMove = posAB.ElementAt(i);
 
                     //Make a deep copy
                     int[,] bufferField = new int[20, 20];

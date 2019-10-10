@@ -212,7 +212,7 @@ namespace Adantino_2
 
                     g.DrawPolygon(myPen, buffer);
 
-                    g.DrawString((r + fieldRadius) + ";" + (q + fieldRadius), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                    g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                     //Thread.Sleep(15);
                 }
             }
