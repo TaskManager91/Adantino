@@ -9,10 +9,12 @@ namespace Adantino_2
     class AI
     {
         private Map map;
+        private CheckWin check;
         private const int fieldRadius = 9;
         public AI(Map bufferMap)
         {
             map = bufferMap;
+            check = new CheckWin(map);
         }
 
         public void alphaBetaStart()
@@ -93,7 +95,7 @@ namespace Adantino_2
 
         public int alphaBeta(Move move, int[,] scoreField, int depth, int alpha, int beta, bool black)
         {
-            int win = map.checkWin(scoreField);
+            int win = check.checkWin(scoreField);
 
             if (win == 1)
                 return 2000;
