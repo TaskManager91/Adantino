@@ -11,7 +11,7 @@ namespace Adantino_2
     static class Program
     {
         /// <summary>
-        /// Der Haupteinstiegspunkt für die Anwendung.
+        /// Adantino The Game
         /// </summary>
         [STAThread]
         static void Main()

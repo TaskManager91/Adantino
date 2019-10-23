@@ -11,20 +11,11 @@ namespace Adantino_2
     public class Map
     {
         const int fieldRadius = 9;    //Field radius in each direction 
-
         public bool black { get; set; }
-
         public bool abReady { get; set; }
-
-        public bool aiOne { get; set; }
-        public bool aiTwo { get; set; }
-
         public int aiDepth { get; set; }
-
         public int aiTime { get; set; }
-
         public int currentAiTime { get; set; }
-
         public int[,] myField { get; set; }
         public List<int[,]> moveList { get; set; }
         public int moveCounter { get; set; }
@@ -36,8 +27,6 @@ namespace Adantino_2
             moveList = new List<int[,]>();
             moveCounter = 0;
             black = false;
-            aiOne = true;
-            aiTwo = true;
 
             //filling the Array with -1
             for (int i = 0; i < 20; i++)
@@ -128,208 +117,6 @@ namespace Adantino_2
                     i++;
 
             return i;
-        }
-
-        public int alphaBeta(Move move, int[,] scoreField, int depth, int alpha, int beta, bool black)
-        {
-            int win = checkWin(scoreField);
-
-            if (win == 1)
-                return 2000;
-
-            if (win == 2)
-               return -2000;
-
-            
-            if (depth == 0)
-                return evalPos(scoreField);
-                
-
-            //return evalPos(scoreField);
-
-            //Console.WriteLine("checking move: " + (move.r +fieldRadius) + ";" + (move.q + fieldRadius));
-
-            if (black)
-            {
-                scoreField = checkPosMoves(scoreField);
-
-                List<Move> posAB = getPosMoves(scoreField);
-                
-                int maxEval = -9999;
-                int eval = 0;
-
-                for (int i = 0; i < posAB.Count; i++)
-                {
-                    Move bufferMove = posAB.ElementAt(i);
-
-                    //Make a deep copy
-                    int[,] bufferField = new int[20,20];
-                    bufferField = scoreField.Clone() as int[,];
-
-                    bufferField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 1;
-
-                    eval = alphaBeta(bufferMove, bufferField, depth - 1, alpha, beta, false);
-
-                    //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + eval)
-                    maxEval = Math.Max(maxEval, eval);
-                    alpha = Math.Max(alpha, eval);
-                    if (beta <= alpha)
-                        break;
-                }
-
-                return maxEval;
-            }
-            else
-            {
-                scoreField = checkPosMoves(scoreField);
-
-                List<Move> posAB = getPosMoves(scoreField);
-               
-                int minEval = 9999;
-                int eval = 0;
-                for (int i = 0; i < posAB.Count; i++)
-                {
-                    Move bufferMove = posAB.ElementAt(i);
-
-                    //Make a deep copy
-                    int[,] bufferField = new int[20, 20];
-                    bufferField = scoreField.Clone() as int[,];
-
-                    bufferField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 2;
-
-                    eval = alphaBeta(bufferMove, bufferField, depth - 1, alpha, beta, true);
-
-                    minEval = Math.Min (minEval, eval);
-                    beta = Math.Min (beta, eval);
-                    if (beta <= alpha)
-                        break;
-                              
-                }
-                return minEval;
-            }
-        }
-
-        public int evalPos(int[,] evalField)
-        {
-            int reward = 0;
-
-            int brow = 0;
-            int rrow = 0;
-            int bbestrow = 0;
-            int rbestrow = 0;
-
-            //check for diagonal ( / ) row 
-            for (int s = -(fieldRadius); s <= fieldRadius; s++)
-            {
-                int q1 = Math.Max(-fieldRadius, -s - fieldRadius);
-                int q2 = Math.Min(fieldRadius, -s + fieldRadius);
-                for (int q = q1; q <= q2; q++)
-                {
-                    int r = -(q) - (s);
-
-                    if (evalField[r + fieldRadius, q + fieldRadius] == 1)
-                        brow++;
-
-                    if (evalField[r + fieldRadius, q + fieldRadius] == 2)
-                        rrow++;
-
-                    if (evalField[r + fieldRadius, q + fieldRadius] != 1)
-                        brow = 0;
-
-                    if (evalField[r + fieldRadius, q + fieldRadius] != 2)
-                        rrow = 0;
-
-                    if (brow > bbestrow)
-                        bbestrow = brow;
-
-                    if (rrow > rbestrow)
-                        rbestrow = rrow;
-                }
-                rrow = 0;
-                brow = 0;
-            }
-
-            /*
-            if (rbestrow > bbestrow)
-                reward += -100;
-            else if (rbestrow < bbestrow)
-                reward += 100;
-                */
-
-            //check for diagonal ( \ ) row 
-            for (int q = -(fieldRadius); q <= fieldRadius; q++)
-            {
-                int r1 = Math.Max(-fieldRadius, -q - fieldRadius);
-                int r2 = Math.Min(fieldRadius, -q + fieldRadius);
-                for (int r = r1; r <= r2; r++)
-                {
-                    if (evalField[r + fieldRadius, q + fieldRadius] == 1)
-                        brow++;
-
-
-                    if (evalField[r + fieldRadius, q + fieldRadius] == 2)
-                        rrow++;
-
-                    if (evalField[r + fieldRadius, q + fieldRadius] != 1)
-                        brow = 0;
-
-                    if (evalField[r + fieldRadius, q + fieldRadius] != 2)
-                        rrow = 0;
-
-                    if (brow > bbestrow)
-                        bbestrow = brow;
-
-                    if (rrow > rbestrow)
-                        rbestrow = rrow;
-                }
-                rrow = 0;
-                brow = 0;
-            }
-
-            /*
-            if (rbestrow > bbestrow)
-                reward += -100;
-            else if (rbestrow < bbestrow)
-                reward += 100;
-                */
-
-            //check for horizontal ( - ) row 
-            for (int r = -(fieldRadius); r <= fieldRadius; r++)
-            {
-                int q1 = Math.Max(-fieldRadius, -r - fieldRadius);
-                int q2 = Math.Min(fieldRadius, -r + fieldRadius);
-                for (int q = q1; q <= q2; q++)
-                {
-                    if (evalField[r + fieldRadius, q + fieldRadius] == 1)
-                        brow++;
-
-                    if (evalField[r + fieldRadius, q + fieldRadius] == 2)
-                        rrow++;
-
-                    if (evalField[r + fieldRadius, q + fieldRadius] != 1)
-                        brow = 0;
-
-                    if (evalField[r + fieldRadius, q + fieldRadius] != 2)
-                        rrow = 0;
-
-                    if (brow > bbestrow)
-                        bbestrow = brow;
-
-                    if (rrow > rbestrow)
-                        rbestrow = rrow;
-                }
-                rrow = 0;
-                brow = 0;
-            }
-
-            if (rbestrow > bbestrow)
-                reward += -100;
-            else if (rbestrow < bbestrow)
-                reward += 100;
-
-            //Console.WriteLine("Bestrow: " + bestrow + " for " + black);
-
-            return reward;
         }
 
         public int checkWin(int[,] checkField)
@@ -723,14 +510,15 @@ namespace Adantino_2
                 }  
                 else 
                 {
-                    aiDepth = 6;
+                    aiDepth = 2;
 
                     Stopwatch stopwatch = new Stopwatch();
                     stopwatch.Start();
                     abReady = false;
+                    AI ai = new AI(this);
 
                     // START AlphaBeta
-                    var abThread = new Thread(alphaBetaStart);
+                    var abThread = new Thread(ai.alphaBetaStart);
                     abThread.IsBackground = true;
                     abThread.Start();
 
@@ -767,84 +555,6 @@ namespace Adantino_2
                 return win;
             }
         }
-
-        public void alphaBetaStart()
-        {
-            //remove last recommondation
-            removeMoves(4);
-
-            //Check the field for possible moves
-            myField = checkPosMoves(myField);
-
-            //Get all possible moves in an List
-            List<Move> posMovesList = getPosMoves(myField);
-
-            if (black)
-                Console.WriteLine("Possible moves for black: " + posMovesList.Count);
-            else
-                Console.WriteLine("Possible moves for red: " + posMovesList.Count);
-
-            int highScore = 0;
-
-            if (black)
-                highScore = -1500;
-            else
-                highScore = 1500;
-
-            Move bestMove = new Move(0, 0);
-
-            for (int i = 0; i < posMovesList.Count; i++)
-            {
-                Move bufferMove = new Move(0, 0);
-                bufferMove = posMovesList.ElementAt(i);
-
-                //Make a deep copy
-                int[,] evalField = new int[20, 20];
-                evalField = myField.Clone() as int[,];
-
-                if (black)
-                    evalField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 1;
-                else
-                    evalField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 2;
-
-                //Move Played so other player
-                bool bBuffer = !black;
-
-                int score = 0;
-                score = alphaBeta(bufferMove, evalField, aiDepth, -9999, 9999, bBuffer);
-
-                if (black)
-                {
-                    if (score >= highScore)
-                    {
-                        //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + score);
-                        highScore = score;
-                        bestMove = bufferMove;
-                    }
-
-                }
-                else
-                {
-                    if (score <= highScore)
-                    {
-                        //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + score);
-                        highScore = score;
-                        bestMove = bufferMove;
-                    }
-                }
-            }
-
-            abReady = true;
-
-            if (black && highScore == -1500)
-                highScore = -1500; // Enemy won -> no suggestion
-            else if (!black && highScore == 1500)
-                highScore = 1500; // Enemy won -> no suggestion
-            else
-                myField[(bestMove.r + fieldRadius), (bestMove.q + fieldRadius)] = 4;
-        }
-
-
     }
 
 }

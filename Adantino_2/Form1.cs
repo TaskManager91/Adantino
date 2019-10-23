@@ -34,14 +34,9 @@ namespace Adantino_2
             myMap = bufferMap;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
+        private void Form1_Load(object sender, EventArgs e){}
 
-        }
-
-        private void Form1_Paint(object sender, PaintEventArgs e)
-        {
-        }
+        private void Form1_Paint(object sender, PaintEventArgs e){}
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
@@ -195,17 +190,18 @@ namespace Adantino_2
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 3)
                     {
-                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                         // Possible move
                         g.FillPolygon(greyBrush, buffer);
                         g.DrawPolygon(myPen, buffer);
+                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 4)
                     {
-                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                        
                         // Suggested move
                         g.FillPolygon(goldBrush, buffer);
                         g.DrawPolygon(myPen, buffer);
+                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                     }
                     else
                     {
@@ -305,26 +301,18 @@ namespace Adantino_2
             }
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
+        private void label1_Click(object sender, EventArgs e) {}
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            myMap.aiOne = !myMap.aiOne;
-            //this.Refresh();
-        }
-
-
-        private void label2_Click(object sender, EventArgs e)
-        {
 
         }
+
+
+        private void label2_Click(object sender, EventArgs e){}
 
         private void checkBox2_CheckedChanged_1(object sender, EventArgs e)
         {
-            myMap.aiTwo = !myMap.aiTwo;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -335,7 +323,7 @@ namespace Adantino_2
             stopwatch.Start();
 
             // START AlphaBeta
-            myMap.alphaBetaStart();
+            //myMap.alphaBetaStart();
 
             stopwatch.Stop();
             TimeSpan stopwatchElapsed = stopwatch.Elapsed;
@@ -344,25 +332,13 @@ namespace Adantino_2
         }
 
 
-        private void label3_Click(object sender, EventArgs e)
-        {
+        private void label3_Click(object sender, EventArgs e){}
 
-        }
+        private void label4_Click(object sender, EventArgs e){}
 
-        private void label4_Click(object sender, EventArgs e)
-        {
+        private void label5_Click(object sender, EventArgs e){}
 
-        }
-
-        private void label5_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label6_Click(object sender, EventArgs e)
-        {
-
-        }
+        private void label6_Click(object sender, EventArgs e){}
 
         private void button4_Click(object sender, EventArgs e)
         {
