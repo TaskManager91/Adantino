@@ -15,7 +15,6 @@ namespace Adantino_2
         public Move(int bufferR, int bufferQ)
         {
             r = bufferR;
-
             q = bufferQ;
         }
     }

@@ -41,7 +41,6 @@ namespace Adantino_2
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -73,7 +72,7 @@ namespace Adantino_2
             q = roundedPoint.X;
             r = roundedPoint.Y;
 
-            int win = myMap.makeMove((int)r, (int)q); // -1 invalid move, 0 normal move, 1 Black wins, 2 Red wins
+            int win = myMap.makeMove((int)r, (int)q, this); // -1 invalid move, 0 normal move, 1 Black wins, 2 Red wins
 
             if (win == 0)
             {
@@ -184,35 +183,39 @@ namespace Adantino_2
 
                     if(bufferMap[r+fieldRadius,q+fieldRadius] == 1)
                     {
-                        // Draw ellipse to screen.
+                        // Black Player
                         g.FillPolygon(blackBrush, buffer);
+                        g.DrawPolygon(myPen, buffer);
                     }
                     else if (bufferMap[r + fieldRadius, q+fieldRadius] == 2)
                     {
-                        // Draw ellipse to screen.
+                        // Red Player
                         g.FillPolygon(redBrush, buffer);
+                        g.DrawPolygon(myPen, buffer);
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 3)
                     {
-                        
-                        // Draw ellipse to screen.
+                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                        // Possible move
                         g.FillPolygon(greyBrush, buffer);
+                        g.DrawPolygon(myPen, buffer);
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 4)
                     {
-                        
-                        // Draw ellipse to screen.
+                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                        // Suggested move
                         g.FillPolygon(goldBrush, buffer);
+                        g.DrawPolygon(myPen, buffer);
                     }
                     else
                     {
-                        // Draw ellipse to screen.
-                        g.FillPolygon(brownBrush, buffer);
+                        // empty field
+                        //g.FillPolygon(brownBrush, buffer);
                     }
 
-                    g.DrawPolygon(myPen, buffer);
+                    //g.DrawPolygon(myPen, buffer);
 
-                    g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                    //g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                     //Thread.Sleep(15);
                 }
             }
@@ -223,7 +226,9 @@ namespace Adantino_2
 
             label2.Text = "Move: " + myMap.moveCounter;
             label3.Text = "AI depth: " + myMap.aiDepth;
-            label5.Text = "AI time: " + myMap.aiTime + " ms";
+            label5.Text = "Last AI time: " + myMap.aiTime + " ms";
+            label6.Text = "current time: " + myMap.currentAiTime + " ms";
+
             label4.Text = "Rendertime: " + time + " ms";
 
         }
@@ -241,6 +246,19 @@ namespace Adantino_2
             }
 
             return shape;
+        }
+
+        public void redrawLabels()
+        {
+            label2.Text = "Move: " + myMap.moveCounter;
+            label3.Text = "AI depth: " + myMap.aiDepth;
+            label5.Text = "last AI time: " + myMap.aiTime + " ms";
+            label6.Text = "current time: " + myMap.currentAiTime + " ms";
+
+            label2.Refresh();
+            label3.Refresh();
+            label5.Refresh();
+            label6.Refresh();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -309,6 +327,23 @@ namespace Adantino_2
             myMap.aiTwo = !myMap.aiTwo;
         }
 
+        private void button3_Click(object sender, EventArgs e)
+        {
+            myMap.aiDepth++;
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            // START AlphaBeta
+            myMap.alphaBetaStart();
+
+            stopwatch.Stop();
+            TimeSpan stopwatchElapsed = stopwatch.Elapsed;
+            myMap.aiTime = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
+            this.Refresh();
+        }
+
+
         private void label3_Click(object sender, EventArgs e)
         {
 
@@ -324,20 +359,9 @@ namespace Adantino_2
 
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void label6_Click(object sender, EventArgs e)
         {
-            myMap.aiDepth++;
 
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            // START AlphaBeta
-            myMap.alphaBetaStart();
-
-            stopwatch.Stop();
-            TimeSpan stopwatchElapsed = stopwatch.Elapsed;
-            myMap.aiTime = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
-            this.Refresh();
         }
     }
 }

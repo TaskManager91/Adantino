@@ -14,12 +14,16 @@ namespace Adantino_2
 
         public bool black { get; set; }
 
+        public bool abReady { get; set; }
+
         public bool aiOne { get; set; }
         public bool aiTwo { get; set; }
 
         public int aiDepth { get; set; }
 
         public int aiTime { get; set; }
+
+        public int currentAiTime { get; set; }
 
         public int[,] myField { get; set; }
         public List<int[,]> moveList { get; set; }
@@ -669,9 +673,19 @@ namespace Adantino_2
             return posMovesList;
         }
 
-        public int makeMove(int r, int q)
+        public int makeMove(int r, int q, Form1 form)
         {
             int win = -1;
+            int rChecker;
+            int qChecker;
+
+            rChecker = r + fieldRadius;
+            qChecker = q + fieldRadius;
+
+            //Radius check
+            if (rChecker >= 20 || qChecker >= 20 || rChecker <= -1 || qChecker <= -1)
+                return win;
+
 
             if (myField[r + fieldRadius, q + fieldRadius] == 0 || myField[r + fieldRadius, q + fieldRadius] == 1 || myField[r + fieldRadius, q + fieldRadius] == 2)
             {
@@ -713,9 +727,27 @@ namespace Adantino_2
 
                     Stopwatch stopwatch = new Stopwatch();
                     stopwatch.Start();
+                    abReady = false;
 
                     // START AlphaBeta
-                    alphaBetaStart();
+                    var abThread = new Thread(alphaBetaStart);
+                    abThread.IsBackground = true;
+                    abThread.Start();
+
+                    do
+                    {
+                        //wait for Search to be Ready
+                        Thread.Sleep(100);
+
+                        TimeSpan elapsed = stopwatch.Elapsed;
+                        currentAiTime = Convert.ToInt32(elapsed.TotalMilliseconds);
+
+                        form.redrawLabels();
+
+                    } while (!abReady);
+
+                    currentAiTime = 0;
+                    abThread.Abort();
 
                     stopwatch.Stop();
                     TimeSpan stopwatchElapsed = stopwatch.Elapsed;
@@ -801,6 +833,8 @@ namespace Adantino_2
                     }
                 }
             }
+
+            abReady = true;
 
             if (black && highScore == -1500)
                 highScore = -1500; // Enemy won -> no suggestion
