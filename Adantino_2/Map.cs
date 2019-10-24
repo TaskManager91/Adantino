@@ -190,6 +190,23 @@ namespace Adantino_2
             }
         }
 
+        public void swapMoves(int from, int to)
+        {
+            //remove all possible moves / make unplayable
+            for (int q = -(fieldRadius); q <= fieldRadius; q++)
+            {
+                int r1 = Math.Max(-fieldRadius, -q - fieldRadius);
+                int r2 = Math.Min(fieldRadius, -q + fieldRadius);
+                for (int r = r1; r <= r2; r++)
+                {
+                    if (myField[r + fieldRadius, q + fieldRadius] == from)
+                    {
+                        myField[r + fieldRadius, q + fieldRadius] = to;
+                    }
+                }
+            }
+        }
+
         public List<Move> getPosMoves(int[,] checkList)
         {
             List<Move> posMovesList = new List<Move>();
@@ -259,46 +276,21 @@ namespace Adantino_2
                 black = !black;
 
                 if (win == 1 || win == 2)
-                {
                     removeMoves(3);
-                }  
-                else 
+                else
                 {
-                    aiDepth = 6;
-
-                    Stopwatch stopwatch = new Stopwatch();
-                    stopwatch.Start();
-                    abReady = false;
-                    AI ai = new AI(this);
-
                     // START AlphaBeta
-                    //var abThread = new Thread(ai.alphaBetaStart);
-                    //abThread.IsBackground = true;
-                    //abThread.Start();
-                    /*
-                    do
-                    {
-                        //wait for Search to be Ready
-                        Thread.Sleep(100);
-
-                        TimeSpan elapsed = stopwatch.Elapsed;
-                        currentAiTime = Convert.ToInt32(elapsed.TotalMilliseconds);
-
-                        form.redrawLabels();
-
-                    } while (!abReady);
-                    */
-                    ai.alphaBetaStart();
-                    currentAiTime = 0;
-                    //abThread.Abort();
-
-                    stopwatch.Stop();
-                    TimeSpan stopwatchElapsed = stopwatch.Elapsed;
-                    aiTime = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
-
+                    AI ai = new AI(this);
+                    Thread abThread;
+                    abThread = new Thread(ai.alphaBetaStart);
+                    abThread.IsBackground = true;
+                    abThread.Start();
+                    Thread.Sleep(500);
+                    abThread.Abort();
                 }
 
-                //Make a deep copy
+
+                    //Make a deep copy
                 int[,] bufferField = myField.Clone() as int[,];
 
                 //add move to moveList

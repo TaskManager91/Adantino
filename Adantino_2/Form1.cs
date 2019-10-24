@@ -15,8 +15,15 @@ namespace Adantino_2
     public partial class Form1 : Form
     {
         Map myMap;
+        AI ai;
+
         int fieldRadius = 9;
         int fieldSize = 27;
+
+        int aiTime = 0;
+        int currentAiTime = 0;
+        Thread abThread;
+        Thread abTimerThread;
 
         public Form1()
         {
@@ -30,13 +37,19 @@ namespace Adantino_2
             panel1.Paint += new PaintEventHandler(panel1_Paint);
             panel1.Click += new EventHandler(panel1_Click);
             Controls.Add(panel1);
-            button1.Visible = false;
+            undo_button.Visible = false;
             myMap = bufferMap;
+            ai = new AI(myMap);
+            abThread = new Thread(ai.alphaBetaStart);
         }
 
-        private void Form1_Load(object sender, EventArgs e){}
+        private void Form1_Load(object sender, EventArgs e)
+        {
+        }
 
-        private void Form1_Paint(object sender, PaintEventArgs e){}
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+        }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
@@ -67,45 +80,46 @@ namespace Adantino_2
             q = roundedPoint.X;
             r = roundedPoint.Y;
 
-            int win = myMap.makeMove((int)r, (int)q, this); // -1 invalid move, 0 normal move, 1 Black wins, 2 Red wins
+            int win = myMap.makeMove((int) r, (int) q, this); // -1 invalid move, 0 normal move, 1 Black wins, 2 Red wins
 
             if (win == 0)
             {
                 //move done
                 if (myMap.black)
                 {
-                    label1.ForeColor = Color.Black;
-                    label1.Text = "Blacks turn";
+                    turn_label.ForeColor = Color.Black;
+                    turn_label.Text = "Blacks turn";
                 }
                 else
                 {
-                    label1.ForeColor = Color.Red;
-                    label1.Text = "Reds turn";
+                    turn_label.ForeColor = Color.Red;
+                    turn_label.Text = "Reds turn";
                 }
 
-                button1.Visible = true;
+                undo_button.Visible = true;
                 this.Refresh();
             }
             else if (win == 1)
             {
                 //Black wins
-                label1.ForeColor = Color.Black;
-                label1.Text = "Black wins!";
+                turn_label.ForeColor = Color.Black;
+                turn_label.Text = "Black wins!";
                 this.Refresh();
             }
             else if (win == 2)
             {
                 //Red wins
-                label1.ForeColor = Color.Red;
-                label1.Text = "Red wins!";
+                turn_label.ForeColor = Color.Red;
+                turn_label.Text = "Red wins!";
                 this.Refresh();
             }
             else
             {
                 //invalid move
-                label1.Text += " / Invalid move!";
+                turn_label.Text += " / Invalid move!";
                 this.Refresh();
             }
+
             /*
             g.DrawString("Clicked to Pos: " + curserPoint.X + " Y: " + curserPoint.Y, this.Font, Brushes.Black, 0f, 0f);
             g.DrawString("q: " + q, this.Font, Brushes.Black, 0f, 20f);
@@ -117,25 +131,24 @@ namespace Adantino_2
         {
             PointF point = new PointF();
 
-            int qi = (int)(Math.Round(q));
-            int ri = (int)(Math.Round(r));
-            int si = (int)(Math.Round(-q-r));
+            int qi = (int) (Math.Round(q));
+            int ri = (int) (Math.Round(r));
+            int si = (int) (Math.Round(-q - r));
             double q_diff = Math.Abs(qi - q);
             double r_diff = Math.Abs(ri - r);
-            double s_diff = Math.Abs(si - (-q-r));
+            double s_diff = Math.Abs(si - (-q - r));
             if (q_diff > r_diff && q_diff > s_diff)
             {
                 qi = -ri - si;
             }
+            else if (r_diff > s_diff)
+            {
+                ri = -qi - si;
+            }
             else
-                if (r_diff > s_diff)
-                {
-                    ri = -qi - si;
-                }
-                else
-                {
-                    si = -qi - ri;
-                }
+            {
+                si = -qi - ri;
+            }
 
             point.X = qi;
             point.Y = ri;
@@ -162,9 +175,9 @@ namespace Adantino_2
             SolidBrush greyBrush = new SolidBrush(Color.Gray);
             SolidBrush brownBrush = new SolidBrush(Color.BurlyWood);
 
-            for (int r = -(fieldRadius); r<= fieldRadius; r++)
+            for (int r = -(fieldRadius); r <= fieldRadius; r++)
             {
-                int q1 = Math.Max(-fieldRadius, -r- fieldRadius);
+                int q1 = Math.Max(-fieldRadius, -r - fieldRadius);
                 int q2 = Math.Min(fieldRadius, -r + fieldRadius);
                 for (int q = q1; q <= q2; q++)
                 {
@@ -174,15 +187,15 @@ namespace Adantino_2
                     coordX += (panel1.Width / 2);
                     coordY += (panel1.Height / 2);
 
-                    PointF[] buffer = GetDrawPoints((float)coordX, (float)coordY, (int)fieldSize);
+                    PointF[] buffer = GetDrawPoints((float) coordX, (float) coordY, (int) fieldSize);
 
-                    if(bufferMap[r+fieldRadius,q+fieldRadius] == 1)
+                    if (bufferMap[r + fieldRadius, q + fieldRadius] == 1)
                     {
                         // Black Player
                         g.FillPolygon(blackBrush, buffer);
                         g.DrawPolygon(myPen, buffer);
                     }
-                    else if (bufferMap[r + fieldRadius, q+fieldRadius] == 2)
+                    else if (bufferMap[r + fieldRadius, q + fieldRadius] == 2)
                     {
                         // Red Player
                         g.FillPolygon(redBrush, buffer);
@@ -193,15 +206,17 @@ namespace Adantino_2
                         // Possible move
                         g.FillPolygon(greyBrush, buffer);
                         g.DrawPolygon(myPen, buffer);
-                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float) coordX - (float) fieldSize + 10,
+                            (float) coordY - (float) fieldSize + 8);
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 4)
                     {
-                        
+
                         // Suggested move
                         g.FillPolygon(goldBrush, buffer);
                         g.DrawPolygon(myPen, buffer);
-                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float) coordX - (float) fieldSize + 10,
+                            (float) coordY - (float) fieldSize + 8);
                     }
                     else
                     {
@@ -220,12 +235,12 @@ namespace Adantino_2
             TimeSpan stopwatchElapsed = stopwatch.Elapsed;
             int time = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
 
-            label2.Text = "Move: " + myMap.moveCounter;
-            label3.Text = "AI depth: " + myMap.aiDepth;
-            label5.Text = "Last AI time: " + myMap.aiTime + " ms";
-            label6.Text = "current time: " + myMap.currentAiTime + " ms";
+            move_label.Text = "Move: " + myMap.moveCounter;
+            ai_depth_label.Text = "AI depth: " + myMap.aiDepth;
+            ai_lt_label.Text = "Last AI time: " + aiTime + " ms";
+            ai_ct_label.Text = "current time: " + currentAiTime + " ms";
 
-            label4.Text = "Rendertime: " + time + " ms";
+            render_label.Text = "Rendertime: " + time + " ms";
 
         }
 
@@ -236,62 +251,50 @@ namespace Adantino_2
             //Create 6 points
             for (int i = 0; i < 6; i++)
             {
-                float angle_deg = 60 * i -30;
-                float angle_rad = (float)Math.PI / 180 * angle_deg;
-                shape[i] = new PointF((x + size * (float)Math.Cos(angle_rad)), (y + size * (float)Math.Sin(angle_rad)));
+                float angle_deg = 60 * i - 30;
+                float angle_rad = (float) Math.PI / 180 * angle_deg;
+                shape[i] = new PointF((x + size * (float) Math.Cos(angle_rad)),
+                    (y + size * (float) Math.Sin(angle_rad)));
             }
 
             return shape;
         }
 
-        public void redrawLabels()
-        {
-            label2.Text = "Move: " + myMap.moveCounter;
-            label3.Text = "AI depth: " + myMap.aiDepth;
-            label5.Text = "last AI time: " + myMap.aiTime + " ms";
-            label6.Text = "current time: " + myMap.currentAiTime + " ms";
-
-            label2.Refresh();
-            label3.Refresh();
-            label5.Refresh();
-            label6.Refresh();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
+        private void undo_button_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Undo clicked");
-            if(myMap.moveCounter >= 1)
+            if (myMap.moveCounter >= 1)
             {
                 int[,] bufferField = myMap.moveList.ElementAt(myMap.moveCounter - 1).Clone() as int[,];
                 myMap.myField = bufferField;
                 myMap.moveList.RemoveAt(myMap.moveCounter);
 
                 myMap.moveCounter--;
-                if(myMap.moveCounter == 0)
+                if (myMap.moveCounter == 0)
                 {
-                    button1.Visible = false;
+                    undo_button.Visible = false;
                 }
 
                 myMap.black = !myMap.black;
 
-                label2.Text = "Move: " + myMap.moveCounter;
+                move_label.Text = "Move: " + myMap.moveCounter;
 
                 if (myMap.black)
                 {
-                    label1.ForeColor = Color.Black;
-                    label1.Text = "Blacks turn";
+                    turn_label.ForeColor = Color.Black;
+                    turn_label.Text = "Blacks turn";
                 }
                 else
                 {
-                    label1.ForeColor = Color.Red;
-                    label1.Text = "Reds turn";
+                    turn_label.ForeColor = Color.Red;
+                    turn_label.Text = "Reds turn";
                 }
 
                 this.Refresh();
             }
         }
 
-        private void Button2_Click(object sender, EventArgs e)
+        private void restart_button_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Restart clicked");
             if (myMap.moveCounter >= 1)
@@ -301,49 +304,108 @@ namespace Adantino_2
             }
         }
 
-        private void label1_Click(object sender, EventArgs e) {}
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void kill_ai_button_Click(object sender, EventArgs e)
         {
+            if (!myMap.abReady)
+            {
+                myMap.abReady = true;
+                abThread.Abort();
+                abTimerThread.Abort();
+            }
 
         }
 
-
-        private void label2_Click(object sender, EventArgs e){}
-
-        private void checkBox2_CheckedChanged_1(object sender, EventArgs e)
+        private void start_ai_button_Click(object sender, EventArgs e)
         {
+            myMap.abReady = false;
+
+            //START Timer + Inspector
+            abTimerThread = new Thread(abThreadInspector);
+            abTimerThread.IsBackground = true;
+            abTimerThread.Start();
+
+            // START AlphaBeta
+            abThread = new Thread(ai.alphaBetaStart);
+            abThread.IsBackground = true;
+            abThread.Start();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        public void abThreadInspector()
         {
-            myMap.aiDepth++;
-
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            // START AlphaBeta
-            //myMap.alphaBetaStart();
+            int bufferDepth = 0;
+
+            do
+            {
+                //wait for Search to be Ready
+                Thread.Sleep(100);
+
+                TimeSpan elapsed = stopwatch.Elapsed;
+                currentAiTime = Convert.ToInt32(elapsed.TotalMilliseconds);
+
+                if (myMap.aiDepth >= bufferDepth)
+                {
+                    redrawPanelSafe();
+                    aiTime = currentAiTime;
+                    currentAiTime = 0;
+                    bufferDepth++;
+                }
+
+                redrawLabelsSafe();
+            } while (!myMap.abReady);
+
 
             stopwatch.Stop();
             TimeSpan stopwatchElapsed = stopwatch.Elapsed;
-            myMap.aiTime = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
-            this.Refresh();
+            aiTime = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
+
+            redrawPanelSafe();
+            redrawLabelsSafe();
         }
 
-
-        private void label3_Click(object sender, EventArgs e){}
-
-        private void label4_Click(object sender, EventArgs e){}
-
-        private void label5_Click(object sender, EventArgs e){}
-
-        private void label6_Click(object sender, EventArgs e){}
-
-        private void button4_Click(object sender, EventArgs e)
+        public void redrawLabelsSafe()
         {
-            if (myMap.abReady)
-                myMap.abReady = false;
+            if (this.move_label.InvokeRequired)
+                this.move_label.BeginInvoke((MethodInvoker) delegate()
+                {
+                    this.move_label.Text = "Move: " + myMap.moveCounter;
+                });
+            else
+                move_label.Text = "Move: " + myMap.moveCounter;
+
+            if (this.ai_depth_label.InvokeRequired)
+                this.ai_depth_label.BeginInvoke((MethodInvoker) delegate()
+                {
+                    this.ai_depth_label.Text = "AI depth: " + myMap.aiDepth;
+                });
+            else
+                ai_depth_label.Text = "AI depth: " + myMap.aiDepth;
+
+            if (this.ai_ct_label.InvokeRequired)
+                this.ai_ct_label.BeginInvoke((MethodInvoker) delegate()
+                {
+                    this.ai_ct_label.Text = "current time: " + currentAiTime + " ms";
+                });
+            else
+                ai_ct_label.Text = "current time: " + currentAiTime + " ms";
+
+            if (this.ai_lt_label.InvokeRequired)
+                this.ai_lt_label.BeginInvoke((MethodInvoker) delegate()
+                {
+                    this.ai_lt_label.Text = "last AI time: " + aiTime + " ms";
+                });
+            else
+                ai_lt_label.Text = "last AI time: " + aiTime + " ms";
+        }
+
+        public void redrawPanelSafe()
+        {
+            if (InvokeRequired)
+                Invoke(new MethodInvoker(this.Refresh));
+            else
+                this.Refresh();
         }
     }
 }

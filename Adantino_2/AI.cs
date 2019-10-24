@@ -19,7 +19,9 @@ namespace Adantino_2
 
         public void alphaBetaStart()
         {
-            //remove last recommondation
+            map.aiDepth = 2;
+            map.abReady = false;
+            //remove last recommendation
             map.removeMoves(4);
 
             //Check the field for possible moves
@@ -42,55 +44,70 @@ namespace Adantino_2
 
             Move bestMove = new Move(0, 0);
 
-            for (int i = 0; i < posMovesList.Count; i++)
+            while(!map.abReady)
             {
-                Move bufferMove = new Move(0, 0);
-                bufferMove = posMovesList.ElementAt(i);
-
-                //Make a deep copy
-                int[,] evalField = new int[20, 20];
-                evalField = map.myField.Clone() as int[,];
-
-                if (map.black)
-                    evalField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 1;
-                else
-                    evalField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 2;
-
-                //Move Played so other player
-                bool bBuffer = !map.black;
-
-                int score = 0;
-                score = alphaBeta(bufferMove, evalField, map.aiDepth, -9999, 9999, bBuffer);
-
-                if (map.black)
+                for (int i = 0; i < posMovesList.Count; i++)
                 {
-                    if (score >= highScore)
-                    {
-                        //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + score);
-                        highScore = score;
-                        bestMove = bufferMove;
-                    }
+                    Move bufferMove = new Move(0, 0);
+                    bufferMove = posMovesList.ElementAt(i);
 
+                    //Make a deep copy
+                    int[,] evalField = new int[20, 20];
+                    evalField = map.myField.Clone() as int[,];
+
+                    if (map.black)
+                        evalField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 1;
+                    else
+                        evalField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 2;
+
+                    //Move Played so other player
+                    bool bBuffer = !map.black;
+
+                    int score = 0;
+                    score = alphaBeta(bufferMove, evalField, map.aiDepth, -9999, 9999, bBuffer);
+
+                    posMovesList.ElementAt(i).score = score;
+
+                    if (map.black)
+                    {
+                        if (score >= highScore)
+                        {
+                            //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + score);
+                            highScore = score;
+                            bestMove = bufferMove;
+                            bestMove.score = score;
+                        }
+                    }
+                    else
+                    {
+                        if (score <= highScore)
+                        {
+                            //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + score);
+                            highScore = score;
+                            bestMove = bufferMove;
+                            bestMove.score = score;
+                        }
+                    }
                 }
+
+                if (map.black && highScore == -1500)
+                    Console.WriteLine("Enemy Red will win in " + map.aiDepth + " moves");
+                else if (!map.black && highScore == 1500)
+                    Console.WriteLine("Enemy Black will win in " + map.aiDepth + " moves");
                 else
                 {
-                    if (score <= highScore)
-                    {
-                        //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + score);
-                        highScore = score;
-                        bestMove = bufferMove;
-                    }
+                    map.swapMoves(4,3);
+                    map.myField[(bestMove.r + fieldRadius), (bestMove.q + fieldRadius)] = 4;
                 }
+                    
+                
+                if(map.black)
+                    posMovesList = posMovesList.OrderBy(q => q.score).ToList();
+                else
+                    posMovesList = posMovesList.OrderByDescending(buffer => buffer.score).ToList();
+
+                map.aiDepth++;
             }
-
-            map.abReady = true;
-
-            if (map.black && highScore == -1500)
-                highScore = -1500; // Enemy won -> no suggestion
-            else if (!map.black && highScore == 1500)
-                highScore = 1500; // Enemy won -> no suggestion
-            else
-                map.myField[(bestMove.r + fieldRadius), (bestMove.q + fieldRadius)] = 4;
         }
 
         public int alphaBeta(Move move, int[,] scoreField, int depth, int alpha, int beta, bool black)

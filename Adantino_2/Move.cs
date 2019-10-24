@@ -12,6 +12,8 @@ namespace Adantino_2
 
         public int q { get; set; }
 
+        public int score { get; set; }
+
         public Move(int bufferR, int bufferQ)
         {
             r = bufferR;

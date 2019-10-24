@@ -28,188 +28,148 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.undo_button = new System.Windows.Forms.Button();
+            this.restart_button = new System.Windows.Forms.Button();
+            this.turn_label = new System.Windows.Forms.Label();
+            this.move_label = new System.Windows.Forms.Label();
+            this.ai_depth_label = new System.Windows.Forms.Label();
+            this.render_label = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label5 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
+            this.ai_ct_label = new System.Windows.Forms.Label();
+            this.ai_lt_label = new System.Windows.Forms.Label();
+            this.kill_ai_button = new System.Windows.Forms.Button();
+            this.start_ai_button = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button1
+            // undo_button
             // 
-            this.button1.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(12, 30);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(115, 58);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Undo";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.undo_button.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.undo_button.Location = new System.Drawing.Point(1157, 12);
+            this.undo_button.Name = "undo_button";
+            this.undo_button.Size = new System.Drawing.Size(115, 58);
+            this.undo_button.TabIndex = 0;
+            this.undo_button.Text = "Undo";
+            this.undo_button.UseVisualStyleBackColor = true;
+            this.undo_button.Click += new System.EventHandler(this.undo_button_Click);
             // 
-            // button2
+            // restart_button
             // 
-            this.button2.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.Location = new System.Drawing.Point(1157, 30);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(115, 58);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "Restart";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.Button2_Click);
+            this.restart_button.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.restart_button.Location = new System.Drawing.Point(1157, 891);
+            this.restart_button.Name = "restart_button";
+            this.restart_button.Size = new System.Drawing.Size(115, 58);
+            this.restart_button.TabIndex = 3;
+            this.restart_button.Text = "Restart";
+            this.restart_button.UseVisualStyleBackColor = true;
+            this.restart_button.Click += new System.EventHandler(this.restart_button_Click);
             // 
-            // checkBox1
+            // turn_label
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox1.ForeColor = System.Drawing.Color.Goldenrod;
-            this.checkBox1.Location = new System.Drawing.Point(1157, 112);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(121, 26);
-            this.checkBox1.TabIndex = 4;
-            this.checkBox1.Text = "Player 1 AI";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.turn_label.AutoSize = true;
+            this.turn_label.Font = new System.Drawing.Font("Arial", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.turn_label.ForeColor = System.Drawing.Color.Red;
+            this.turn_label.Location = new System.Drawing.Point(414, 8);
+            this.turn_label.Name = "turn_label";
+            this.turn_label.Size = new System.Drawing.Size(153, 36);
+            this.turn_label.TabIndex = 2;
+            this.turn_label.Text = "Reds turn";
             // 
-            // checkBox2
+            // move_label
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Checked = true;
-            this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox2.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox2.ForeColor = System.Drawing.Color.Goldenrod;
-            this.checkBox2.Location = new System.Drawing.Point(1157, 140);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(121, 26);
-            this.checkBox2.TabIndex = 5;
-            this.checkBox2.Text = "Player 2 AI";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged_1);
+            this.move_label.AutoSize = true;
+            this.move_label.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.move_label.Location = new System.Drawing.Point(901, 8);
+            this.move_label.Name = "move_label";
+            this.move_label.Size = new System.Drawing.Size(86, 24);
+            this.move_label.TabIndex = 6;
+            this.move_label.Text = "Move: 0";
             // 
-            // label1
+            // ai_depth_label
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Arial", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.Red;
-            this.label1.Location = new System.Drawing.Point(414, 8);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(153, 36);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Reds turn";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
+            this.ai_depth_label.AutoSize = true;
+            this.ai_depth_label.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ai_depth_label.Location = new System.Drawing.Point(48, 56);
+            this.ai_depth_label.Name = "ai_depth_label";
+            this.ai_depth_label.Size = new System.Drawing.Size(110, 24);
+            this.ai_depth_label.TabIndex = 7;
+            this.ai_depth_label.Text = "AI depth: 0";
             // 
-            // label2
+            // render_label
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(901, 8);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(86, 24);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Move: 0";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(48, 56);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(110, 24);
-            this.label3.TabIndex = 7;
-            this.label3.Text = "AI depth: 0";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(2, 936);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(125, 16);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "Rendertime: 000 ms";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
+            this.render_label.AutoSize = true;
+            this.render_label.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.render_label.Location = new System.Drawing.Point(2, 936);
+            this.render_label.Name = "render_label";
+            this.render_label.Size = new System.Drawing.Size(125, 16);
+            this.render_label.TabIndex = 8;
+            this.render_label.Text = "Rendertime: 000 ms";
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.label6);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.label3);
-            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.ai_ct_label);
+            this.panel1.Controls.Add(this.move_label);
+            this.panel1.Controls.Add(this.ai_lt_label);
+            this.panel1.Controls.Add(this.ai_depth_label);
+            this.panel1.Controls.Add(this.turn_label);
             this.panel1.Location = new System.Drawing.Point(142, 1);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1000, 1000);
             this.panel1.TabIndex = 1;
             // 
-            // label5
+            // ai_ct_label
             // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(14, 32);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(161, 24);
-            this.label5.TabIndex = 9;
-            this.label5.Text = "Last AI time: 0 s";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
+            this.ai_ct_label.AutoSize = true;
+            this.ai_ct_label.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ai_ct_label.Location = new System.Drawing.Point(14, 8);
+            this.ai_ct_label.Name = "ai_ct_label";
+            this.ai_ct_label.Size = new System.Drawing.Size(161, 24);
+            this.ai_ct_label.TabIndex = 10;
+            this.ai_ct_label.Text = "current time: 0 s";
             // 
-            // button3
+            // ai_lt_label
             // 
-            this.button3.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.Location = new System.Drawing.Point(1157, 202);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(115, 58);
-            this.button3.TabIndex = 6;
-            this.button3.Text = "Dig deeper!";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.ai_lt_label.AutoSize = true;
+            this.ai_lt_label.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ai_lt_label.Location = new System.Drawing.Point(14, 32);
+            this.ai_lt_label.Name = "ai_lt_label";
+            this.ai_lt_label.Size = new System.Drawing.Size(161, 24);
+            this.ai_lt_label.TabIndex = 9;
+            this.ai_lt_label.Text = "Last AI time: 0 s";
             // 
-            // label6
+            // kill_ai_button
             // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(14, 8);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(161, 24);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "current time: 0 s";
-            this.label6.Click += new System.EventHandler(this.label6_Click);
+            this.kill_ai_button.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.kill_ai_button.Location = new System.Drawing.Point(12, 88);
+            this.kill_ai_button.Name = "kill_ai_button";
+            this.kill_ai_button.Size = new System.Drawing.Size(115, 58);
+            this.kill_ai_button.TabIndex = 9;
+            this.kill_ai_button.Text = "Kill the dwarf!";
+            this.kill_ai_button.UseVisualStyleBackColor = true;
+            this.kill_ai_button.Click += new System.EventHandler(this.kill_ai_button_Click);
             // 
-            // button4
+            // start_ai_button
             // 
-            this.button4.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button4.Location = new System.Drawing.Point(1157, 280);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(115, 58);
-            this.button4.TabIndex = 9;
-            this.button4.Text = "Kill the dwarf!";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.start_ai_button.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.start_ai_button.Location = new System.Drawing.Point(12, 12);
+            this.start_ai_button.Name = "start_ai_button";
+            this.start_ai_button.Size = new System.Drawing.Size(115, 58);
+            this.start_ai_button.TabIndex = 10;
+            this.start_ai_button.Text = "Start AI";
+            this.start_ai_button.UseVisualStyleBackColor = true;
+            this.start_ai_button.Click += new System.EventHandler(this.start_ai_button_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1284, 961);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.checkBox2);
-            this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.start_ai_button);
+            this.Controls.Add(this.kill_ai_button);
+            this.Controls.Add(this.render_label);
+            this.Controls.Add(this.restart_button);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.undo_button);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -222,19 +182,17 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button undo_button;
+        private System.Windows.Forms.Button restart_button;
+        private System.Windows.Forms.Label turn_label;
+        private System.Windows.Forms.Label move_label;
+        private System.Windows.Forms.Label ai_depth_label;
+        private System.Windows.Forms.Label render_label;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label ai_lt_label;
+        private System.Windows.Forms.Label ai_ct_label;
+        private System.Windows.Forms.Button kill_ai_button;
+        private System.Windows.Forms.Button start_ai_button;
     }
 }
 
