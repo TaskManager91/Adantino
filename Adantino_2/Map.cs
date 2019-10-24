@@ -14,8 +14,6 @@ namespace Adantino_2
         public bool black { get; set; }
         public bool abReady { get; set; }
         public int aiDepth { get; set; }
-        public int aiTime { get; set; }
-        public int currentAiTime { get; set; }
         public int[,] myField { get; set; }
         public List<int[,]> moveList { get; set; }
         public int moveCounter { get; set; }
@@ -285,12 +283,16 @@ namespace Adantino_2
                     abThread = new Thread(ai.alphaBetaStart);
                     abThread.IsBackground = true;
                     abThread.Start();
-                    Thread.Sleep(500);
+
+                    if(moveCounter <= 5)
+                        Thread.Sleep(500);
+                    else
+                        Thread.Sleep(1000);
+
                     abThread.Abort();
                 }
 
-
-                    //Make a deep copy
+                //Make a deep copy
                 int[,] bufferField = myField.Clone() as int[,];
 
                 //add move to moveList

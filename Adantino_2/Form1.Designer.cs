@@ -144,7 +144,7 @@
             this.kill_ai_button.Name = "kill_ai_button";
             this.kill_ai_button.Size = new System.Drawing.Size(115, 58);
             this.kill_ai_button.TabIndex = 9;
-            this.kill_ai_button.Text = "Kill the dwarf!";
+            this.kill_ai_button.Text = "Kill AI";
             this.kill_ai_button.UseVisualStyleBackColor = true;
             this.kill_ai_button.Click += new System.EventHandler(this.kill_ai_button_Click);
             // 

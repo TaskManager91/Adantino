@@ -24,6 +24,7 @@ namespace Adantino_2
         int currentAiTime = 0;
         Thread abThread;
         Thread abTimerThread;
+        char[] notation = new char[19];
 
         public Form1()
         {
@@ -41,8 +42,10 @@ namespace Adantino_2
             myMap = bufferMap;
             ai = new AI(myMap);
             abThread = new Thread(ai.alphaBetaStart);
+            char[] bufferNotation = { 's','r', 'q', 'p', 'o', 'n', 'm', 'l', 'k', 'j', 'i', 'h', 'h', 'f', 'e', 'd', 'c', 'b', 'a' };
+            notation = bufferNotation;
         }
-
+        
         private void Form1_Load(object sender, EventArgs e)
         {
         }
@@ -175,12 +178,14 @@ namespace Adantino_2
             SolidBrush greyBrush = new SolidBrush(Color.Gray);
             SolidBrush brownBrush = new SolidBrush(Color.BurlyWood);
 
+            
             for (int r = -(fieldRadius); r <= fieldRadius; r++)
             {
                 int q1 = Math.Max(-fieldRadius, -r - fieldRadius);
                 int q2 = Math.Min(fieldRadius, -r + fieldRadius);
                 for (int q = q1; q <= q2; q++)
                 {
+                    int s = -q - r;
                     double coordX = fieldSize * (Math.Sqrt(3) * q + Math.Sqrt(3) / 2 * r);
                     double coordY = fieldSize * ((1.5f) * r);
 
@@ -194,20 +199,21 @@ namespace Adantino_2
                         // Black Player
                         g.FillPolygon(blackBrush, buffer);
                         g.DrawPolygon(myPen, buffer);
+                        //g.DrawString((r + fieldRadius + 1) + ";" + (notation[s + fieldRadius]), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 2)
                     {
                         // Red Player
                         g.FillPolygon(redBrush, buffer);
                         g.DrawPolygon(myPen, buffer);
+                        //g.DrawString((r + fieldRadius + 1) + ";" + (notation[s + fieldRadius]), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 3)
                     {
                         // Possible move
                         g.FillPolygon(greyBrush, buffer);
                         g.DrawPolygon(myPen, buffer);
-                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float) coordX - (float) fieldSize + 10,
-                            (float) coordY - (float) fieldSize + 8);
+                        //g.DrawString((r + fieldRadius + 1) + ";" + (notation[s + fieldRadius]), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 4)
                     {
@@ -215,21 +221,78 @@ namespace Adantino_2
                         // Suggested move
                         g.FillPolygon(goldBrush, buffer);
                         g.DrawPolygon(myPen, buffer);
-                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float) coordX - (float) fieldSize + 10,
-                            (float) coordY - (float) fieldSize + 8);
+                        //g.DrawString((r + fieldRadius + 1) + ";" + (notation[s + fieldRadius]), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+
                     }
                     else
                     {
                         // empty field
-                        //g.FillPolygon(brownBrush, buffer);
+                        g.FillPolygon(brownBrush, buffer);
                     }
 
-                    //g.DrawPolygon(myPen, buffer);
-
-                    //g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                    g.DrawPolygon(myPen, buffer);
+                    g.DrawString((r + fieldRadius + 1) + ";" + (notation[s + fieldRadius]), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                     //Thread.Sleep(15);
                 }
             }
+            
+            
+            /* 
+            // CHECK whole array (boundaries etc.)
+            for (int r =0; r < 20; r++)
+            {
+                for (int q = 0; q < 20; q++)
+                {
+                    double coordX = fieldSize * (Math.Sqrt(3) * q + Math.Sqrt(3) / 2 * r);
+                    double coordY = fieldSize * ((1.5f) * r);
+
+                    coordX -= 150;
+                    coordY += 150;
+
+                    PointF[] buffer = GetDrawPoints((float)coordX, (float)coordY, (int)fieldSize);
+
+                    if (bufferMap[r, q] == 1)
+                    {
+                        // Black Player
+                        g.FillPolygon(blackBrush, buffer);
+                        g.DrawPolygon(myPen, buffer);
+                    }
+                    else if (bufferMap[r, q] == 2)
+                    {
+                        // Red Player
+                        g.FillPolygon(redBrush, buffer);
+                        g.DrawPolygon(myPen, buffer);
+                    }
+                    else if (bufferMap[r, q] == 3)
+                    {
+                        // Possible move
+                        g.FillPolygon(greyBrush, buffer);
+                        g.DrawPolygon(myPen, buffer);
+                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10,
+                            (float)coordY - (float)fieldSize + 8);
+                    }
+                    else if (bufferMap[r, q] == 4)
+                    {
+
+                        // Suggested move
+                        g.FillPolygon(goldBrush, buffer);
+                        g.DrawPolygon(myPen, buffer);
+                        g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10,
+                            (float)coordY - (float)fieldSize + 8);
+                    }
+                    else if (bufferMap[r, q] == 0)
+                    {
+                        // empty field
+                        g.FillPolygon(brownBrush, buffer);
+                    }
+
+                    g.DrawPolygon(myPen, buffer);
+
+                    g.DrawString((r) + ";" + (q), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                    //Thread.Sleep(15);
+                }
+            }
+            */
 
             stopwatch.Stop();
             TimeSpan stopwatchElapsed = stopwatch.Elapsed;

@@ -154,9 +154,20 @@ namespace Adantino_2
                     if (checkField[r + fieldRadius, q + fieldRadius] == 1 || checkField[r + fieldRadius, q + fieldRadius] == 2)
                     {
                         int currentPlayer = checkField[r + fieldRadius, q + fieldRadius];
+
                         //check if at least one neighbor is free
                         int checker = 0;
+
                         checker += map.checkNeighbors(r + fieldRadius, q + fieldRadius, 0, checkField);
+
+                        if (q + fieldRadius == 0)
+                            checker++;
+
+                        if (r + fieldRadius == 0)
+                            checker++;
+
+                        if (checker == 0)
+                            checker += map.checkNeighbors(r + fieldRadius, q + fieldRadius, -1, checkField);
 
                         if (checker == 0)
                             checker += map.checkNeighbors(r + fieldRadius, q + fieldRadius, 3, checkField);
@@ -231,6 +242,12 @@ namespace Adantino_2
                 //check if at least one neighbor of Neighbor is free
                 int checker = 0;
                 checker += map.checkNeighbors(move.r, move.q, 0, checkField);
+
+                if (move.r == 0 || move.q == 0)
+                    checker++;
+
+                if(checker == 0)
+                    checker += map.checkNeighbors(move.r, move.q, -1, checkField);
 
                 if (checker == 0)
                     checker += map.checkNeighbors(move.r, move.q, 3, checkField);
