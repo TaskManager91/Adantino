@@ -136,9 +136,154 @@ namespace Adantino_2
 
             int[,] bufferField = new int[20, 20];
             bufferField = checkField.Clone() as int[,];
-            win = checkPrisoners(bufferField);
+
+            int bufferWin = 0;
+            bufferWin = checkPrisoners(bufferField);
+
+            if (bufferWin != 0)
+            {
+                int[,] bufferFieldTwo = new int[20, 20];
+                bufferFieldTwo = checkField.Clone() as int[,];
+                win = checkDeepPrisoners(bufferFieldTwo);
+            }
+           
 
             return win;
+        }
+
+        public int checkDeepPrisoners(int[,] checkField)
+        {
+            int win = 0;
+
+            List<Move> prisonedFields = new List<Move>();
+
+            for (int r = -(fieldRadius); r <= fieldRadius; r++)
+            {
+                int q1 = Math.Max(-fieldRadius, -r - fieldRadius);
+                int q2 = Math.Min(fieldRadius, -r + fieldRadius);
+                for (int q = q1; q <= q2; q++)
+                {
+                    if (checkField[r + fieldRadius, q + fieldRadius] == 1 || checkField[r + fieldRadius, q + fieldRadius] == 2)
+                    {
+                        int checker = 0;
+
+                        checker += map.checkNeighbors(r + fieldRadius, q + fieldRadius, 1, checkField);
+                        checker += map.checkNeighbors(r + fieldRadius, q + fieldRadius, 2, checkField);
+
+                        if (checker == 6)
+                        {
+                            Console.WriteLine("Trapped Fields: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " " + checker);
+                            Move bufferMove = new Move(r + fieldRadius, q + fieldRadius);
+                            prisonedFields.Add(bufferMove);
+                        }
+                    }
+                }
+            }
+
+            
+
+            for (int i = 0; i < prisonedFields.Count; i++)
+            {
+                Move bufferMove = prisonedFields.ElementAt(i);
+                int checkPlayer = checkField[bufferMove.r, bufferMove.q];
+                bool trapped = false;
+
+                int[,] bufferField = new int[20, 20];
+                bufferField = checkField.Clone() as int[,];
+
+                trapped = crappyBFS(bufferMove, bufferField);
+
+                if (trapped)
+                {
+                    Console.WriteLine("GOT A TRAPPED FIELD");
+                    if (checkPlayer == 1)
+                        win = 2;
+                    else
+                        win = 1;
+                }
+            }
+            return win;
+        }
+
+        public bool crappyBFS(Move move, int[,] checkField)
+        {
+            bool trapped = true;
+
+            List<Move> queue = new List<Move>();
+            queue.Add(move);
+            List<Move> visitedMoves = new List<Move>();
+
+            int currentPlayer = checkField[move.r, move.q];
+            int enemy = 0;
+
+            if (currentPlayer == 1)
+                enemy = 2;
+            else
+                enemy = 1;
+
+            while (queue.Count > 0)
+            {
+                Move activeMove = new Move(0, 0);
+                activeMove = queue.ElementAt(0);
+                visitedMoves.Add(activeMove);
+                queue.RemoveAt(0);
+
+                List<Move> myNeighbors = new List<Move>();
+
+                myNeighbors = map.getMyNeighborsEnemy(activeMove.r, activeMove.q, checkField, enemy);
+
+                for (int i = 0; i < myNeighbors.Count; i++)
+                {
+                    Move bufferMove = myNeighbors.ElementAt(i);
+
+                    bool contains = false;
+
+                    contains = containsVisited(visitedMoves, bufferMove);
+
+                    if (contains)
+                    {
+                        //i've seen this place before ...
+                    }
+                    else
+                    {
+                        if (bufferMove.q == 0)
+                            return false;
+
+                        if (bufferMove.r == 0)
+                            return false;
+
+                        if (checkField[bufferMove.r, bufferMove.q] == 3)
+                            return false;
+
+                        if (checkField[bufferMove.r, bufferMove.q] == 4)
+                            return false;
+
+                        if (checkField[bufferMove.r, bufferMove.q] == 0)
+                            return false;
+
+                        if (checkField[bufferMove.r, bufferMove.q] == -1)
+                            return false;
+
+                        queue.Add(bufferMove);
+                    }
+                }
+            }
+            return trapped;
+        }
+
+        public bool containsVisited(List<Move> visitedMoves, Move move)
+        {
+            bool contains = false;
+            for (int i = 0; i < visitedMoves.Count; i++)
+            {
+                Move bufferMove = visitedMoves.ElementAt(i);
+                if (bufferMove.q == move.q)
+                {
+                    if (bufferMove.r == move.r)
+                        return true;
+                }
+            }
+            return contains;
         }
 
         public int checkPrisoners(int[,] checkField)
@@ -194,8 +339,7 @@ namespace Adantino_2
                         else
                         {
                             checkField[r + fieldRadius, q + fieldRadius] = 99; //Field checked -> ignore in deeper steps to prevent stack overflow
-
-                            checker = checkPrisonersHelper(r + fieldRadius, q + fieldRadius, checkField, currentPlayer);
+                            checker += checkPrisonersHelper(r + fieldRadius, q + fieldRadius, checkField, currentPlayer);
                         }
 
 
@@ -214,7 +358,6 @@ namespace Adantino_2
                             else
                                 checkField[r + fieldRadius, q + fieldRadius] = 6;
                         }
-
                     }
                 }
             }
@@ -227,6 +370,13 @@ namespace Adantino_2
             //int currentPlayer = checkField[r, q];
 
             int win = 0;
+
+            int enemy = 0;
+
+            if (currentPlayer == 1)
+                enemy = 2;
+            else
+                enemy = 1;
 
             List<Move> myNeighbors = new List<Move>();
 
@@ -256,10 +406,10 @@ namespace Adantino_2
                     checker += map.checkNeighbors(move.r, move.q, 4, checkField);
 
                 if (checker == 0 && currentPlayer == 1)
-                    checker += map.checkNeighbors(r, q, 5, checkField);
+                    checker += map.checkNeighbors(move.r, move.q, 5, checkField);
 
                 if (checker == 0 && currentPlayer == 2)
-                    checker += map.checkNeighbors(r, q, 6, checkField);
+                    checker += map.checkNeighbors(move.r, move.q, 6, checkField);
 
                 //Jaay, free field => set to 5 for black or 6 for Red (checked and free) else dig deeper
                 if (checker > 0)
@@ -268,9 +418,8 @@ namespace Adantino_2
                 }
                 else
                 {
-                    //Console.WriteLine("Neighbor (r,q): " + move.r + " " + move.q + " is also trapped going even deeper");
-                    checkField[r, q] = 99; //Field checked -> ignore in deeper steps to prevent stack overflow
-                    checker = checkPrisonersHelper(move.r, move.q, checkField, currentPlayer);
+                    checkField[move.r, move.q] = 99; //Field checked -> ignore in deeper steps to prevent stack overflow
+                    checker += checkPrisonersHelper(move.r, move.q, checkField, currentPlayer);
                 }
 
                 if (checker > 0)

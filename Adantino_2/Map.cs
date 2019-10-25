@@ -117,6 +117,61 @@ namespace Adantino_2
             return i;
         }
 
+
+        public List<Move> getMyNeighborsEnemy(int rBuffer, int qBuffer, int[,] checkField, int enemy)
+        {
+            List<Move> myNeighbors = new List<Move>();
+
+            int y = rBuffer;
+            int x = qBuffer;
+
+            int checkType = enemy;
+
+            if (y + 1 <= 20)
+                if (checkField[y + 1, x] != checkType)
+                {
+                    Move move = new Move(y + 1, x);
+                    myNeighbors.Add(move);
+                }
+
+            if (y + 1 <= 20 && x - 1 >= 0)
+                if (checkField[y + 1, x - 1] != checkType)
+                {
+                    Move move = new Move(y + 1, x - 1);
+                    myNeighbors.Add(move);
+                }
+
+            if (x - 1 >= 0)
+                if (checkField[y, x - 1] != checkType)
+                {
+                    Move move = new Move(y, x - 1);
+                    myNeighbors.Add(move);
+                }
+
+            if (x + 1 <= 20)
+                if (checkField[y, x + 1] != checkType)
+                {
+                    Move move = new Move(y, x + 1);
+                    myNeighbors.Add(move);
+                }
+
+            if (y - 1 >= 0)
+                if (checkField[y - 1, x] != checkType)
+                {
+                    Move move = new Move(y - 1, x);
+                    myNeighbors.Add(move);
+                }
+
+            if (x + 1 <= 20 && y - 1 >= 0)
+                if (checkField[y - 1, x + 1] != checkType)
+                {
+                    Move move = new Move(y - 1, x + 1);
+                    myNeighbors.Add(move);
+                }
+
+            return myNeighbors;
+        }
+
         public List<Move> getMyNeighbors(int rBuffer, int qBuffer, int[,] checkField, int currentPlayer)
         {
             List<Move> myNeighbors = new List<Move>();
@@ -277,6 +332,7 @@ namespace Adantino_2
                     removeMoves(3);
                 else
                 {
+                    
                     // START AlphaBeta
                     AI ai = new AI(this);
                     Thread abThread;
@@ -284,12 +340,13 @@ namespace Adantino_2
                     abThread.IsBackground = true;
                     abThread.Start();
 
-                    if(moveCounter <= 5)
+                    if(moveCounter <= 10)
                         Thread.Sleep(500);
                     else
                         Thread.Sleep(1000);
 
                     abThread.Abort();
+                    
                 }
 
                 //Make a deep copy
