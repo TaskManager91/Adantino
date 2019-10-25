@@ -39,6 +39,8 @@
             this.ai_lt_label = new System.Windows.Forms.Label();
             this.kill_ai_button = new System.Windows.Forms.Button();
             this.start_ai_button = new System.Windows.Forms.Button();
+            this.blackAI_box = new System.Windows.Forms.CheckBox();
+            this.redAI_box = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -159,11 +161,39 @@
             this.start_ai_button.UseVisualStyleBackColor = true;
             this.start_ai_button.Click += new System.EventHandler(this.start_ai_button_Click);
             // 
+            // blackAI_box
+            // 
+            this.blackAI_box.AutoSize = true;
+            this.blackAI_box.Checked = true;
+            this.blackAI_box.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.blackAI_box.Location = new System.Drawing.Point(1157, 88);
+            this.blackAI_box.Name = "blackAI_box";
+            this.blackAI_box.Size = new System.Drawing.Size(69, 17);
+            this.blackAI_box.TabIndex = 11;
+            this.blackAI_box.Text = "Black AI ";
+            this.blackAI_box.UseVisualStyleBackColor = true;
+            this.blackAI_box.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // redAI_box
+            // 
+            this.redAI_box.AutoSize = true;
+            this.redAI_box.Checked = true;
+            this.redAI_box.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.redAI_box.Location = new System.Drawing.Point(1157, 112);
+            this.redAI_box.Name = "redAI_box";
+            this.redAI_box.Size = new System.Drawing.Size(59, 17);
+            this.redAI_box.TabIndex = 12;
+            this.redAI_box.Text = "Red AI";
+            this.redAI_box.UseVisualStyleBackColor = true;
+            this.redAI_box.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1284, 961);
+            this.Controls.Add(this.redAI_box);
+            this.Controls.Add(this.blackAI_box);
             this.Controls.Add(this.start_ai_button);
             this.Controls.Add(this.kill_ai_button);
             this.Controls.Add(this.render_label);
@@ -193,6 +223,8 @@
         private System.Windows.Forms.Label ai_ct_label;
         private System.Windows.Forms.Button kill_ai_button;
         private System.Windows.Forms.Button start_ai_button;
+        private System.Windows.Forms.CheckBox blackAI_box;
+        private System.Windows.Forms.CheckBox redAI_box;
     }
 }
 

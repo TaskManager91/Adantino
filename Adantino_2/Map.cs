@@ -12,6 +12,9 @@ namespace Adantino_2
     {
         const int fieldRadius = 9;    //Field radius in each direction 
         public bool black { get; set; }
+
+        public bool blackAI { get; set; }
+        public bool redAI { get; set; }
         public bool abReady { get; set; }
         public int aiDepth { get; set; }
         public int[,] myField { get; set; }
@@ -25,6 +28,9 @@ namespace Adantino_2
             moveList = new List<int[,]>();
             moveCounter = 0;
             black = false;
+
+            blackAI = true;
+            redAI = true;
 
             //filling the Array with -1
             for (int i = 0; i < 20; i++)
@@ -332,21 +338,42 @@ namespace Adantino_2
                     removeMoves(3);
                 else
                 {
-                    
-                    // START AlphaBeta
-                    AI ai = new AI(this);
-                    Thread abThread;
-                    abThread = new Thread(ai.alphaBetaStart);
-                    abThread.IsBackground = true;
-                    abThread.Start();
+                    if (black && blackAI)
+                    {
+                        // START AlphaBeta
+                        AI ai = new AI(this);
+                        Thread abThread;
+                        abThread = new Thread(ai.alphaBetaStart);
+                        abThread.IsBackground = true;
+                        abThread.Start();
 
-                    if(moveCounter <= 10)
-                        Thread.Sleep(500);
-                    else
-                        Thread.Sleep(1000);
 
-                    abThread.Abort();
-                    
+                        if (moveCounter <= 10)
+                            Thread.Sleep(800);
+                        else
+                            Thread.Sleep(5000);
+
+                        abThread.Abort();
+                    }
+
+                    if (!black && redAI)
+                    {
+                        // START AlphaBeta
+                        AI ai = new AI(this);
+                        Thread abThread;
+                        abThread = new Thread(ai.alphaBetaStart);
+                        abThread.IsBackground = true;
+                        abThread.Start();
+
+
+                        if (moveCounter <= 10)
+                            Thread.Sleep(800);
+                        else
+                            Thread.Sleep(5000);
+
+                        abThread.Abort();
+                    }
+
                 }
 
                 //Make a deep copy

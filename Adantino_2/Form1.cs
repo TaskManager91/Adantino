@@ -496,5 +496,15 @@ namespace Adantino_2
             else
                 this.Refresh();
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            myMap.blackAI = !myMap.blackAI;
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            myMap.redAI = !myMap.redAI;
+        }
     }
 }
