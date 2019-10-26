@@ -172,7 +172,7 @@ namespace Adantino_2
 
                         if (checker == 6)
                         {
-                            Console.WriteLine("Trapped Fields: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " " + checker);
+                            //Console.WriteLine("Trapped Fields: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " " + checker);
                             Move bufferMove = new Move(r + fieldRadius, q + fieldRadius);
                             prisonedFields.Add(bufferMove);
                         }
@@ -195,7 +195,7 @@ namespace Adantino_2
 
                 if (trapped)
                 {
-                    Console.WriteLine("GOT A TRAPPED FIELD");
+                    //Console.WriteLine("GOT A TRAPPED FIELD");
                     if (checkPlayer == 1)
                         win = 2;
                     else

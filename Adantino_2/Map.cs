@@ -12,7 +12,6 @@ namespace Adantino_2
     {
         const int fieldRadius = 9;    //Field radius in each direction 
         public bool black { get; set; }
-
         public bool blackAI { get; set; }
         public bool redAI { get; set; }
         public bool abReady { get; set; }
@@ -348,10 +347,14 @@ namespace Adantino_2
                         abThread.Start();
 
 
-                        if (moveCounter <= 10)
+                        if (moveCounter <= 5)
                             Thread.Sleep(800);
-                        else
-                            Thread.Sleep(5000);
+                        else if (moveCounter >= 5 && moveCounter <= 7)
+                            Thread.Sleep(8000);
+                        else if (moveCounter >= 7 && moveCounter <= 15)
+                            Thread.Sleep(8000);
+                        else 
+                            Thread.Sleep(15000);
 
                         abThread.Abort();
                     }
@@ -366,10 +369,14 @@ namespace Adantino_2
                         abThread.Start();
 
 
-                        if (moveCounter <= 10)
+                        if (moveCounter <= 5)
                             Thread.Sleep(800);
+                        else if (moveCounter >= 5 && moveCounter <= 7)
+                            Thread.Sleep(3000);
+                        else if (moveCounter >= 7 && moveCounter <= 15)
+                            Thread.Sleep(8000);
                         else
-                            Thread.Sleep(5000);
+                            Thread.Sleep(15000);
 
                         abThread.Abort();
                     }
