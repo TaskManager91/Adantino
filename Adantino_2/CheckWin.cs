@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Adantino_2
+namespace Adantino
 {
     class CheckWin
     {
@@ -230,7 +230,7 @@ namespace Adantino_2
 
                 List<Move> myNeighbors = new List<Move>();
 
-                myNeighbors = map.getMyNeighborsEnemy(activeMove.r, activeMove.q, checkField, enemy);
+                myNeighbors = map.getMyEnemyNeighbors(activeMove.r, activeMove.q, checkField, enemy);
 
                 for (int i = 0; i < myNeighbors.Count; i++)
                 {

@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Adantino_2
+namespace Adantino
 {
     public class Map
     {
@@ -62,6 +62,38 @@ namespace Adantino_2
             //add start Position to moveList
             moveList.Add(bufferField);
         }
+
+        public int checkNeighbors(int r, int q, int type, int[,] checkPos)
+        {
+            int i = 0;
+
+            if (r + 1 <= 20)
+                if (checkPos[r + 1, q] == type)
+                    i++;
+
+            if (r + 1 <= 20 && q - 1 >= 0)
+                if (checkPos[r + 1, q - 1] == type)
+                    i++;
+
+            if (q - 1 >= 0)
+                if (checkPos[r, q - 1] == type)
+                    i++;
+
+            if (q + 1 <= 20)
+                if (checkPos[r, q + 1] == type)
+                    i++;
+
+            if (r - 1 >= 0)
+                if (checkPos[r - 1, q] == type)
+                    i++;
+
+            if (q + 1 <= 20 && r - 1 >= 0)
+                if (checkPos[r - 1, q + 1] == type)
+                    i++;
+
+            return i;
+        }
+
         public int[,] checkPosMoves(int[,] checkPos)
         {
             for (int q = -(fieldRadius); q <= fieldRadius; q++)
@@ -91,39 +123,7 @@ namespace Adantino_2
             return checkPos;
         }
 
-        public int checkNeighbors(int y, int x, int type, int[,] checkPos)
-        {
-            int i = 0;
-
-            if (y + 1 <= 20)
-                if (checkPos[y + 1, x] == type)
-                    i++;
-
-            if (y + 1 <= 20 && x - 1 >= 0)
-                if (checkPos[y + 1, x - 1] == type)
-                    i++;
-
-            if (x - 1 >= 0)
-                if (checkPos[y, x - 1] == type)
-                    i++;
-
-            if (x + 1 <= 20)
-                if (checkPos[y, x + 1] == type)
-                    i++;
-
-            if (y - 1 >= 0)
-                if (checkPos[y - 1, x] == type)
-                    i++;
-
-            if (x + 1 <= 20 && y - 1 >= 0)
-                if (checkPos[y - 1, x + 1] == type)
-                    i++;
-
-            return i;
-        }
-
-
-        public List<Move> getMyNeighborsEnemy(int rBuffer, int qBuffer, int[,] checkField, int enemy)
+        public List<Move> getMyEnemyNeighbors(int rBuffer, int qBuffer, int[,] checkField, int enemy)
         {
             List<Move> myNeighbors = new List<Move>();
 
@@ -287,7 +287,7 @@ namespace Adantino_2
             return posMovesList;
         }
 
-        public int makeMove(int r, int q, Form1 form)
+        public int makeMove(int r, int q)
         {
             int win = -1;
             int rChecker;
@@ -337,6 +337,7 @@ namespace Adantino_2
                     removeMoves(3);
                 else
                 {
+                    /*
                     if (black && blackAI)
                     {
                         // START AlphaBeta
@@ -349,12 +350,8 @@ namespace Adantino_2
 
                         if (moveCounter <= 5)
                             Thread.Sleep(800);
-                        else if (moveCounter >= 5 && moveCounter <= 7)
-                            Thread.Sleep(8000);
-                        else if (moveCounter >= 7 && moveCounter <= 15)
-                            Thread.Sleep(8000);
                         else 
-                            Thread.Sleep(15000);
+                            Thread.Sleep(3000);
 
                         abThread.Abort();
                     }
@@ -368,18 +365,14 @@ namespace Adantino_2
                         abThread.IsBackground = true;
                         abThread.Start();
 
-
                         if (moveCounter <= 5)
                             Thread.Sleep(800);
-                        else if (moveCounter >= 5 && moveCounter <= 7)
+                        else 
                             Thread.Sleep(3000);
-                        else if (moveCounter >= 7 && moveCounter <= 15)
-                            Thread.Sleep(8000);
-                        else
-                            Thread.Sleep(15000);
 
                         abThread.Abort();
                     }
+                    */
 
                 }
 

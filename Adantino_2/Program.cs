@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Drawing;
 
 
-namespace Adantino_2
+namespace Adantino
 {
     static class Program
     {
@@ -21,7 +21,7 @@ namespace Adantino_2
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1(myMap));
+            Application.Run(new GameForm(myMap));
         }
     }
 }

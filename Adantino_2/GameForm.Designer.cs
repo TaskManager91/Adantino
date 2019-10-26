@@ -1,6 +1,6 @@
-﻿namespace Adantino_2
+﻿namespace Adantino
 {
-    partial class Form1
+    partial class GameForm
     {
         /// <summary>
         /// Erforderliche Designervariable.
@@ -58,7 +58,7 @@
             // restart_button
             // 
             this.restart_button.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.restart_button.Location = new System.Drawing.Point(1157, 891);
+            this.restart_button.Location = new System.Drawing.Point(12, 162);
             this.restart_button.Name = "restart_button";
             this.restart_button.Size = new System.Drawing.Size(115, 58);
             this.restart_button.TabIndex = 3;
@@ -101,7 +101,7 @@
             // 
             this.render_label.AutoSize = true;
             this.render_label.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.render_label.Location = new System.Drawing.Point(2, 936);
+            this.render_label.Location = new System.Drawing.Point(9, 242);
             this.render_label.Name = "render_label";
             this.render_label.Size = new System.Drawing.Size(125, 16);
             this.render_label.TabIndex = 8;
@@ -166,9 +166,11 @@
             this.blackAI_box.AutoSize = true;
             this.blackAI_box.Checked = true;
             this.blackAI_box.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.blackAI_box.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.blackAI_box.ForeColor = System.Drawing.Color.Goldenrod;
             this.blackAI_box.Location = new System.Drawing.Point(1157, 88);
             this.blackAI_box.Name = "blackAI_box";
-            this.blackAI_box.Size = new System.Drawing.Size(69, 17);
+            this.blackAI_box.Size = new System.Drawing.Size(93, 23);
             this.blackAI_box.TabIndex = 11;
             this.blackAI_box.Text = "Black AI ";
             this.blackAI_box.UseVisualStyleBackColor = true;
@@ -179,9 +181,11 @@
             this.redAI_box.AutoSize = true;
             this.redAI_box.Checked = true;
             this.redAI_box.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.redAI_box.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.redAI_box.ForeColor = System.Drawing.Color.Goldenrod;
             this.redAI_box.Location = new System.Drawing.Point(1157, 112);
             this.redAI_box.Name = "redAI_box";
-            this.redAI_box.Size = new System.Drawing.Size(59, 17);
+            this.redAI_box.Size = new System.Drawing.Size(77, 23);
             this.redAI_box.TabIndex = 12;
             this.redAI_box.Text = "Red AI";
             this.redAI_box.UseVisualStyleBackColor = true;

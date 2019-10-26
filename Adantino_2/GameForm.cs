@@ -10,9 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Adantino_2
+namespace Adantino
 {
-    public partial class Form1 : Form
+    public partial class GameForm : Form
     {
         Map myMap;
         AI ai;
@@ -26,15 +26,15 @@ namespace Adantino_2
         Thread abTimerThread;
         char[] notationRev = new char[19];
         char[] notation = new char[19];
-        bool rev;
-        bool linear;
+        bool havannah;
+        bool intern;
 
-        public Form1()
+        public GameForm()
         {
             InitializeComponent();
         }
 
-        public Form1(Map bufferMap)
+        public GameForm(Map bufferMap)
         {
             InitializeComponent();
             //this.DoubleBuffered = true;
@@ -45,14 +45,14 @@ namespace Adantino_2
             myMap = bufferMap;
             ai = new AI(myMap);
             abThread = new Thread(ai.alphaBetaStart);
-            char[] bufferNotationRev = { 's','r', 'q', 'p', 'o', 'n', 'm', 'l', 'k', 'j', 'i', 'h','g','f', 'e', 'd', 'c', 'b', 'a' };
+            char[] bufferNotationRev = { 'S','R', 'Q', 'P', 'O', 'N', 'M', 'L', 'K', 'J', 'I', 'H','G','F', 'E', 'D', 'C', 'B', 'A' };
             notationRev = bufferNotationRev;
 
             char[] bufferNotation = { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s'};
             notation = bufferNotation;
 
-            rev = true;
-            linear = false;
+            havannah = true;
+            intern = false;
         }
         
         private void Form1_Load(object sender, EventArgs e)
@@ -92,24 +92,65 @@ namespace Adantino_2
             q = roundedPoint.X;
             r = roundedPoint.Y;
 
-            int win = myMap.makeMove((int) r, (int) q, this); // -1 invalid move, 0 normal move, 1 Black wins, 2 Red wins
+            int win = myMap.makeMove((int) r, (int) q); // -1 invalid move, 0 normal move, 1 Black wins, 2 Red wins
 
             if (win == 0)
             {
+                undo_button.Visible = true;
+                this.Refresh();
                 //move done
                 if (myMap.black)
                 {
+                    if (myMap.blackAI)
+                    {
+                        turn_label.ForeColor = Color.Black;
+                        turn_label.Text = "Black AI running ...";
+                        this.Refresh();
+                        // START AlphaBeta
+                        Thread abThread;
+                        abThread = new Thread(ai.alphaBetaStart);
+                        abThread.IsBackground = true;
+                        abThread.Start();
+
+
+                        if (myMap.moveCounter <= 5)
+                            Thread.Sleep(1000);
+                        else
+                            Thread.Sleep(5000);
+
+                        abThread.Abort();
+                    }
+
                     turn_label.ForeColor = Color.Black;
                     turn_label.Text = "Blacks turn";
+                    this.Refresh();
                 }
                 else
                 {
+                    if (myMap.redAI)
+                    {
+                        turn_label.ForeColor = Color.Red;
+                        turn_label.Text = "Red AI running ...";
+                        this.Refresh();
+                        // START AlphaBeta
+                        Thread abThread;
+                        abThread = new Thread(ai.alphaBetaStart);
+                        abThread.IsBackground = true;
+                        abThread.Start();
+
+
+                        if (myMap.moveCounter <= 5)
+                            Thread.Sleep(1000);
+                        else
+                            Thread.Sleep(5000);
+
+                        abThread.Abort();
+                    }
+
                     turn_label.ForeColor = Color.Red;
                     turn_label.Text = "Reds turn";
+                    this.Refresh();
                 }
-
-                undo_button.Visible = true;
-                this.Refresh();
             }
             else if (win == 1)
             {
@@ -187,7 +228,9 @@ namespace Adantino_2
             SolidBrush greyBrush = new SolidBrush(Color.Gray);
             SolidBrush brownBrush = new SolidBrush(Color.BurlyWood);
 
-            
+            this.Font = new Font("Arial", 9, FontStyle.Bold);
+
+
             for (int r = -(fieldRadius); r <= fieldRadius; r++)
             {
                 int q1 = Math.Max(-fieldRadius, -r - fieldRadius);
@@ -208,21 +251,24 @@ namespace Adantino_2
                         // Black Player
                         g.FillPolygon(blackBrush, buffer);
                         g.DrawPolygon(myPen, buffer);
-                        if(rev)
-                            g.DrawString((r + fieldRadius + 1) + ";" + (notationRev[s + fieldRadius]), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                       
+                        if(havannah)
+                            g.DrawString((notationRev[s + fieldRadius]) + " " + (r + fieldRadius + 1), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 12, (float)coordY - (float)fieldSize + 15);
                         
-                        if(linear)
+                        if(intern)
                             g.DrawString((r + fieldRadius) + ";" + (q + fieldRadius), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                          
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 2)
                     {
                         // Red Player
                         g.FillPolygon(redBrush, buffer);
                         g.DrawPolygon(myPen, buffer);
-                        if (rev)
-                            g.DrawString((r + fieldRadius + 1) + ";" + (notationRev[s + fieldRadius]), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
 
-                        if (linear)
+                        if (havannah)
+                            g.DrawString((notationRev[s + fieldRadius]) + " " + (r + fieldRadius + 1), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 12, (float)coordY - (float)fieldSize + 15);
+
+                        if (intern)
                             g.DrawString((r + fieldRadius) + ";" + (q + fieldRadius), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 3)
@@ -230,10 +276,11 @@ namespace Adantino_2
                         // Possible move
                         g.FillPolygon(greyBrush, buffer);
                         g.DrawPolygon(myPen, buffer);
-                        if (rev)
-                            g.DrawString((r + fieldRadius + 1) + ";" + (notationRev[s + fieldRadius]), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
 
-                        if (linear)
+                        if (havannah)
+                            g.DrawString((notationRev[s + fieldRadius]) + " " + (r + fieldRadius + 1), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 12, (float)coordY - (float)fieldSize + 15);
+
+                        if (intern)
                             g.DrawString((r + fieldRadius) + ";" + (q + fieldRadius), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
                     }
                     else if (bufferMap[r + fieldRadius, q + fieldRadius] == 4)
@@ -243,21 +290,21 @@ namespace Adantino_2
                         g.FillPolygon(goldBrush, buffer);
                         g.DrawPolygon(myPen, buffer);
 
-                        if (rev)
-                            g.DrawString((r + fieldRadius + 1) + ";" + (notationRev[s + fieldRadius]), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                        if (havannah)
+                            g.DrawString((notationRev[s + fieldRadius]) + " " + (r + fieldRadius + 1), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 12, (float)coordY - (float)fieldSize + 15);
 
-                        if (linear)
+                        if (intern)
                             g.DrawString((r + fieldRadius) + ";" + (q + fieldRadius), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
 
                     }
                     else
                     {
                         // empty field
-                        //g.FillPolygon(brownBrush, buffer);
+                        g.FillPolygon(brownBrush, buffer);
                     }
 
-                    //g.DrawPolygon(myPen, buffer);
-                    //g.DrawString((r + fieldRadius + 1) + ";" + (notationRev[s + fieldRadius]), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 10, (float)coordY - (float)fieldSize + 8);
+                    g.DrawPolygon(myPen, buffer);
+                    //g.DrawString((notationRev[s + fieldRadius]) + " " + (r + fieldRadius + 1), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 12, (float)coordY - (float)fieldSize + 15);
                     //Thread.Sleep(15);
                 }
             }
