@@ -138,20 +138,20 @@ namespace Adantino
             bufferField = checkField.Clone() as int[,];
 
             int bufferWin = 0;
-            bufferWin = checkPrisoners(bufferField);
+            bufferWin = checkTrapped(bufferField);
 
             if (bufferWin != 0)
             {
                 int[,] bufferFieldTwo = new int[20, 20];
                 bufferFieldTwo = checkField.Clone() as int[,];
-                win = checkDeepPrisoners(bufferFieldTwo);
+                win = checkDeepTrapped(bufferFieldTwo);
             }
            
 
             return win;
         }
 
-        public int checkDeepPrisoners(int[,] checkField)
+        public int checkDeepTrapped(int[,] checkField)
         {
             int win = 0;
 
@@ -191,7 +191,7 @@ namespace Adantino
                 int[,] bufferField = new int[20, 20];
                 bufferField = checkField.Clone() as int[,];
 
-                trapped = crappyBFS(bufferMove, bufferField);
+                trapped = badBFS(bufferMove, bufferField);
 
                 if (trapped)
                 {
@@ -205,7 +205,7 @@ namespace Adantino
             return win;
         }
 
-        public bool crappyBFS(Move move, int[,] checkField)
+        public bool badBFS(Move move, int[,] checkField)
         {
             bool trapped = true;
 
@@ -286,7 +286,7 @@ namespace Adantino
             return contains;
         }
 
-        public int checkPrisoners(int[,] checkField)
+        public int checkTrapped(int[,] checkField)
         {
             int win = 0;
 
@@ -339,7 +339,7 @@ namespace Adantino
                         else
                         {
                             checkField[r + fieldRadius, q + fieldRadius] = 99; //Field checked -> ignore in deeper steps to prevent stack overflow
-                            checker += checkPrisonersHelper(r + fieldRadius, q + fieldRadius, checkField, currentPlayer);
+                            checker += checkTrappedHelper(r + fieldRadius, q + fieldRadius, checkField, currentPlayer);
                         }
 
 
@@ -364,7 +364,7 @@ namespace Adantino
             return win;
         }
 
-        public int checkPrisonersHelper(int r, int q, int[,] checkField, int currentPlayer)
+        public int checkTrappedHelper(int r, int q, int[,] checkField, int currentPlayer)
         {
             //Console.WriteLine("need to dig deeper!");
             //int currentPlayer = checkField[r, q];
@@ -419,7 +419,7 @@ namespace Adantino
                 else
                 {
                     checkField[move.r, move.q] = 99; //Field checked -> ignore in deeper steps to prevent stack overflow
-                    checker += checkPrisonersHelper(move.r, move.q, checkField, currentPlayer);
+                    checker += checkTrappedHelper(move.r, move.q, checkField, currentPlayer);
                 }
 
                 if (checker > 0)

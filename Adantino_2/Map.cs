@@ -63,6 +63,56 @@ namespace Adantino
             moveList.Add(bufferField);
         }
 
+        public int makeMove(int r, int q)
+        {
+            int win = -1;
+
+            if (myField[r + fieldRadius, q + fieldRadius] != 3 && myField[r + fieldRadius, q + fieldRadius] != 4)
+            {
+                //Invalid move! -> not playable
+                return win;
+            }
+            else
+            {
+                if (black)
+                {
+                    myField[r + fieldRadius, q + fieldRadius] = 1;
+                    Console.WriteLine("SET POS: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " set to black");
+                }
+                else
+                {
+                    myField[r + fieldRadius, q + fieldRadius] = 2;
+                    Console.WriteLine("SET POS: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " set to red");
+                }
+
+                //remove last recommondation
+                removeMoves(4);
+
+                //Check the field for possible moves
+                myField = checkPosMoves(myField);
+
+                CheckWin check = new CheckWin(this);
+
+                //Check for winner
+                win = check.checkWin(myField);
+
+                //Next players turn!!
+                black = !black;
+
+                if (win == 1 || win == 2)
+                    removeMoves(3);
+
+                //Make a deep copy
+                int[,] bufferField = myField.Clone() as int[,];
+
+                //add move to moveList
+                moveList.Add(bufferField);
+                moveCounter++;
+
+                return win;
+            }
+        }
+
         public int checkNeighbors(int r, int q, int type, int[,] checkPos)
         {
             int i = 0;
@@ -121,6 +171,28 @@ namespace Adantino
             }
 
             return checkPos;
+        }
+
+        public List<Move> getPosMoves(int[,] checkList)
+        {
+            List<Move> posMovesList = new List<Move>();
+
+            //remove all possible moves / make unplayable
+            for (int q = -(fieldRadius); q <= fieldRadius; q++)
+            {
+                int r1 = Math.Max(-fieldRadius, -q - fieldRadius);
+                int r2 = Math.Min(fieldRadius, -q + fieldRadius);
+                for (int r = r1; r <= r2; r++)
+                {
+                    if (checkList[r + fieldRadius, q + fieldRadius] == 3)
+                    {
+                        Move move = new Move(r, q);
+                        posMovesList.Add(move);
+                    }
+                }
+            }
+
+            return posMovesList;
         }
 
         public List<Move> getMyEnemyNeighbors(int rBuffer, int qBuffer, int[,] checkField, int enemy)
@@ -265,127 +337,7 @@ namespace Adantino
             }
         }
 
-        public List<Move> getPosMoves(int[,] checkList)
-        {
-            List<Move> posMovesList = new List<Move>();
-
-            //remove all possible moves / make unplayable
-            for (int q = -(fieldRadius); q <= fieldRadius; q++)
-            {
-                int r1 = Math.Max(-fieldRadius, -q - fieldRadius);
-                int r2 = Math.Min(fieldRadius, -q + fieldRadius);
-                for (int r = r1; r <= r2; r++)
-                {
-                    if (checkList[r + fieldRadius, q + fieldRadius] == 3)
-                    {
-                        Move move = new Move(r,q);
-                        posMovesList.Add(move);
-                    }
-                }
-            }
-
-            return posMovesList;
-        }
-
-        public int makeMove(int r, int q)
-        {
-            int win = -1;
-            int rChecker;
-            int qChecker;
-
-            rChecker = r + fieldRadius;
-            qChecker = q + fieldRadius;
-
-            //Radius check
-            if (rChecker >= 20 || qChecker >= 20 || rChecker <= -1 || qChecker <= -1)
-                return win;
-
-
-            if (myField[r + fieldRadius, q + fieldRadius] == 0 || myField[r + fieldRadius, q + fieldRadius] == 1 || myField[r + fieldRadius, q + fieldRadius] == 2)
-            {
-                //Invalid move! -> not playable
-                return win;
-            }
-            else
-            {
-                if (black)
-                {
-                    myField[r + fieldRadius, q + fieldRadius] = 1;
-                    Console.WriteLine("SET POS: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " set to black");
-                }
-                else
-                {
-                    myField[r + fieldRadius, q + fieldRadius] = 2;
-                    Console.WriteLine("SET POS: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " set to red");
-                }
-
-                //remove last recommondation
-                removeMoves(4);
-
-                //Check the field for possible moves
-                myField = checkPosMoves(myField);
-
-                CheckWin check = new CheckWin(this);
-
-                //Check for winner
-                win = check.checkWin(myField);
-
-                //Next players turn!!
-                black = !black;
-
-                if (win == 1 || win == 2)
-                    removeMoves(3);
-                else
-                {
-                    /*
-                    if (black && blackAI)
-                    {
-                        // START AlphaBeta
-                        AI ai = new AI(this);
-                        Thread abThread;
-                        abThread = new Thread(ai.alphaBetaStart);
-                        abThread.IsBackground = true;
-                        abThread.Start();
-
-
-                        if (moveCounter <= 5)
-                            Thread.Sleep(800);
-                        else 
-                            Thread.Sleep(3000);
-
-                        abThread.Abort();
-                    }
-
-                    if (!black && redAI)
-                    {
-                        // START AlphaBeta
-                        AI ai = new AI(this);
-                        Thread abThread;
-                        abThread = new Thread(ai.alphaBetaStart);
-                        abThread.IsBackground = true;
-                        abThread.Start();
-
-                        if (moveCounter <= 5)
-                            Thread.Sleep(800);
-                        else 
-                            Thread.Sleep(3000);
-
-                        abThread.Abort();
-                    }
-                    */
-
-                }
-
-                //Make a deep copy
-                int[,] bufferField = myField.Clone() as int[,];
-
-                //add move to moveList
-                moveList.Add(bufferField);
-                moveCounter++;
-
-                return win;
-            }
-        }
+        
     }
 
 }

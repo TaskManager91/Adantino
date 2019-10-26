@@ -226,12 +226,17 @@ namespace Adantino
                 brow = 0;
             }
 
-            /*
-            if (rbestrow > bbestrow)
+            if (rbestrow > bbestrow-1)
+                reward += -200;
+            else if (rbestrow-1 < bbestrow)
+                reward += 200;
+            else if (rbestrow > bbestrow)
                 reward += -100;
             else if (rbestrow < bbestrow)
                 reward += 100;
-                */
+
+            bbestrow = 0;
+            rbestrow = 0;
 
             //check for diagonal ( \ ) row 
             for (int q = -(fieldRadius); q <= fieldRadius; q++)
@@ -263,12 +268,17 @@ namespace Adantino
                 brow = 0;
             }
 
-            /*
-            if (rbestrow > bbestrow)
+            if (rbestrow > bbestrow - 1)
+                reward += -200;
+            else if (rbestrow - 1 < bbestrow)
+                reward += 200;
+            else if (rbestrow > bbestrow)
                 reward += -100;
             else if (rbestrow < bbestrow)
                 reward += 100;
-                */
+
+            bbestrow = 0;
+            rbestrow = 0;
 
             //check for horizontal ( - ) row 
             for (int r = -(fieldRadius); r <= fieldRadius; r++)
@@ -299,10 +309,17 @@ namespace Adantino
                 brow = 0;
             }
 
-            if (rbestrow > bbestrow)
+            if (rbestrow > bbestrow - 1)
+                reward += -200;
+            else if (rbestrow - 1 < bbestrow)
+                reward += 200;
+            else if (rbestrow > bbestrow)
                 reward += -100;
             else if (rbestrow < bbestrow)
                 reward += 100;
+
+            bbestrow = 0;
+            rbestrow = 0;
 
             //Console.WriteLine("Bestrow: " + bestrow + " for " + black);
 
