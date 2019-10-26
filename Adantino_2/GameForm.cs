@@ -38,19 +38,28 @@ namespace Adantino
         {
             InitializeComponent();
             //this.DoubleBuffered = true;
+
             panel1.Paint += new PaintEventHandler(panel1_Paint);
             panel1.Click += new EventHandler(panel1_Click);
             Controls.Add(panel1);
+
             undo_button.Visible = false;
+
+            //store the map
             myMap = bufferMap;
+
+            //create new AI with the map
             ai = new AI(myMap);
             abThread = new Thread(ai.alphaBetaStart);
+
+            //necessary for the havannah field notation
             char[] bufferNotationRev = { 'S','R', 'Q', 'P', 'O', 'N', 'M', 'L', 'K', 'J', 'I', 'H','G','F', 'E', 'D', 'C', 'B', 'A' };
             notationRev = bufferNotationRev;
 
             char[] bufferNotation = { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s'};
             notation = bufferNotation;
 
+            //Show havannah or internal field notation
             havannah = true;
             intern = false;
         }
@@ -76,6 +85,7 @@ namespace Adantino
 
             Point curserPoint = panel1.PointToClient(Cursor.Position);
 
+            //start in the middle of the Panel
             curserPoint.X -= (panel1.Width / 2);
             curserPoint.Y -= (panel1.Height / 2);
 
@@ -99,6 +109,7 @@ namespace Adantino
                 undo_button.Visible = true;
                 this.Refresh();
                 //move done
+
                 if (myMap.black)
                 {
                     if (myMap.blackAI)
@@ -106,6 +117,7 @@ namespace Adantino
                         turn_label.ForeColor = Color.Black;
                         turn_label.Text = "Black AI running ...";
                         this.Refresh();
+
                         // START AlphaBeta
                         Thread abThread;
                         abThread = new Thread(ai.alphaBetaStart);
@@ -118,6 +130,7 @@ namespace Adantino
                         else
                             Thread.Sleep(5000);
 
+                        //Time is over -> kill it
                         abThread.Abort();
                     }
 
@@ -132,6 +145,7 @@ namespace Adantino
                         turn_label.ForeColor = Color.Red;
                         turn_label.Text = "Red AI running ...";
                         this.Refresh();
+
                         // START AlphaBeta
                         Thread abThread;
                         abThread = new Thread(ai.alphaBetaStart);
@@ -144,6 +158,7 @@ namespace Adantino
                         else
                             Thread.Sleep(5000);
 
+                        //Time is over -> kill it
                         abThread.Abort();
                     }
 
@@ -180,9 +195,12 @@ namespace Adantino
             */
         }
 
+        //round the coords 
         public PointF roundCoord(double q, double r)
         {
             PointF point = new PointF();
+
+            //from https://www.redblobgames.com/grids/hexagons/ 
 
             int qi = (int) (Math.Round(q));
             int ri = (int) (Math.Round(r));
@@ -211,6 +229,7 @@ namespace Adantino
 
         public void drawField(Graphics g)
         {
+            //start timer ... rendering is slow
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
@@ -230,7 +249,7 @@ namespace Adantino
 
             this.Font = new Font("Arial", 9, FontStyle.Bold);
 
-
+            //run through the "playable" field
             for (int r = -(fieldRadius); r <= fieldRadius; r++)
             {
                 int q1 = Math.Max(-fieldRadius, -r - fieldRadius);
@@ -238,12 +257,15 @@ namespace Adantino
                 for (int q = q1; q <= q2; q++)
                 {
                     int s = -q - r;
+
+                    //calculate coords to draw
                     double coordX = fieldSize * (Math.Sqrt(3) * q + Math.Sqrt(3) / 2 * r);
                     double coordY = fieldSize * ((1.5f) * r);
 
                     coordX += (panel1.Width / 2);
                     coordY += (panel1.Height / 2);
 
+                    //get the corner Points of each hexagon
                     PointF[] buffer = GetDrawPoints((float) coordX, (float) coordY, (int) fieldSize);
 
                     if (bufferMap[r + fieldRadius, q + fieldRadius] == 1)
@@ -300,10 +322,10 @@ namespace Adantino
                     else
                     {
                         // empty field
-                        g.FillPolygon(brownBrush, buffer);
+                        g.FillPolygon(brownBrush, buffer); // <- comment this line out for better render performance
                     }
 
-                    g.DrawPolygon(myPen, buffer);
+                    g.DrawPolygon(myPen, buffer); // <- comment this line out for better render performance
                     //g.DrawString((notationRev[s + fieldRadius]) + " " + (r + fieldRadius + 1), this.Font, Brushes.Aqua, (float)coordX - (float)fieldSize + 12, (float)coordY - (float)fieldSize + 15);
                     //Thread.Sleep(15);
                 }
@@ -371,6 +393,7 @@ namespace Adantino
             TimeSpan stopwatchElapsed = stopwatch.Elapsed;
             int time = Convert.ToInt32(stopwatchElapsed.TotalMilliseconds);
 
+            //redraw the labels
             move_label.Text = "Move: " + myMap.moveCounter;
             ai_depth_label.Text = "AI depth: " + myMap.aiDepth;
             ai_lt_label.Text = "Last AI time: " + aiTime + " ms";
@@ -387,6 +410,7 @@ namespace Adantino
             //Create 6 points
             for (int i = 0; i < 6; i++)
             {
+                //from https://www.redblobgames.com/grids/hexagons/ 
                 float angle_deg = 60 * i - 30;
                 float angle_rad = (float) Math.PI / 180 * angle_deg;
                 shape[i] = new PointF((x + size * (float) Math.Cos(angle_rad)),
@@ -399,18 +423,24 @@ namespace Adantino
         private void undo_button_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Undo clicked");
+
             if (myMap.moveCounter >= 1)
             {
+                //set field to the previous state
                 int[,] bufferField = myMap.moveList.ElementAt(myMap.moveCounter - 1).Clone() as int[,];
                 myMap.myField = bufferField;
-                myMap.moveList.RemoveAt(myMap.moveCounter);
 
+                //remove the last move
+                myMap.moveList.RemoveAt(myMap.moveCounter);
                 myMap.moveCounter--;
+
                 if (myMap.moveCounter == 0)
                 {
+                    //No moves made -> make the undo button invisible
                     undo_button.Visible = false;
                 }
 
+                //swap the Player
                 myMap.black = !myMap.black;
 
                 move_label.Text = "Move: " + myMap.moveCounter;
@@ -435,6 +465,7 @@ namespace Adantino
             Console.WriteLine("Restart clicked");
             if (myMap.moveCounter >= 1)
             {
+                //just call initField to reset the Game
                 myMap.initField();
                 this.Refresh();
             }
@@ -444,6 +475,7 @@ namespace Adantino
         {
             if (!myMap.abReady)
             {
+                //Kill the Threads 
                 myMap.abReady = true;
                 abThread.Abort();
                 abTimerThread.Abort();
@@ -475,12 +507,13 @@ namespace Adantino
 
             do
             {
-                //wait for Search to be Ready
+                //wait a bit
                 Thread.Sleep(200);
 
                 TimeSpan elapsed = stopwatch.Elapsed;
                 currentAiTime = Convert.ToInt32(elapsed.TotalMilliseconds);
 
+                //if the ai reached a new depth
                 if (myMap.aiDepth >= bufferDepth)
                 {
                     redrawPanelSafe();
@@ -501,6 +534,7 @@ namespace Adantino
             redrawLabelsSafe();
         }
 
+        //necessary for threading
         public void redrawLabelsSafe()
         {
             if (this.move_label.InvokeRequired)
@@ -536,6 +570,7 @@ namespace Adantino
                 ai_lt_label.Text = "last AI time: " + aiTime + " ms";
         }
 
+        //necessary for threading
         public void redrawPanelSafe()
         {
             if (InvokeRequired)
@@ -544,6 +579,7 @@ namespace Adantino
                 this.Refresh();
         }
 
+        //activate / deactivate AI
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             myMap.blackAI = !myMap.blackAI;

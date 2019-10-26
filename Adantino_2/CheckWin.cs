@@ -58,6 +58,7 @@ namespace Adantino
                 rRow = 0;
             }
 
+            //check for winner
             if (bBestRow >= 5)
                 return 1;
 
@@ -93,6 +94,7 @@ namespace Adantino
                 rRow = 0;
             }
 
+            //check for winner
             if (bBestRow >= 5)
                 return 1;
 
@@ -128,6 +130,7 @@ namespace Adantino
                 rRow = 0;
             }
 
+            //check for winner
             if (bBestRow >= 5)
                 return 1;
 
@@ -138,10 +141,13 @@ namespace Adantino
             bufferField = checkField.Clone() as int[,];
 
             int bufferWin = 0;
+
+            //check the fast custom one
             bufferWin = checkTrapped(bufferField);
 
             if (bufferWin != 0)
             {
+                //check for deep trapped players
                 int[,] bufferFieldTwo = new int[20, 20];
                 bufferFieldTwo = checkField.Clone() as int[,];
                 win = checkDeepTrapped(bufferFieldTwo);
@@ -172,6 +178,7 @@ namespace Adantino
 
                         if (checker == 6)
                         {
+                            // Deep trapped player
                             //Console.WriteLine("Trapped Fields: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " " + checker);
                             Move bufferMove = new Move(r + fieldRadius, q + fieldRadius);
                             prisonedFields.Add(bufferMove);
@@ -182,6 +189,7 @@ namespace Adantino
 
             
 
+            //perform for all deep trapped players an BFS
             for (int i = 0; i < prisonedFields.Count; i++)
             {
                 Move bufferMove = prisonedFields.ElementAt(i);
@@ -191,6 +199,7 @@ namespace Adantino
                 int[,] bufferField = new int[20, 20];
                 bufferField = checkField.Clone() as int[,];
 
+                //perform BFS
                 trapped = badBFS(bufferMove, bufferField);
 
                 if (trapped)
@@ -205,6 +214,7 @@ namespace Adantino
             return win;
         }
 
+        //simple BFS implementation
         public bool badBFS(Move move, int[,] checkField)
         {
             bool trapped = true;
@@ -271,6 +281,7 @@ namespace Adantino
             return trapped;
         }
 
+        //custom helper function for BFS
         public bool containsVisited(List<Move> visitedMoves, Move move)
         {
             bool contains = false;
@@ -286,6 +297,7 @@ namespace Adantino
             return contains;
         }
 
+        //check simple Trapped
         public int checkTrapped(int[,] checkField)
         {
             int win = 0;
@@ -411,7 +423,7 @@ namespace Adantino
                 if (checker == 0 && currentPlayer == 2)
                     checker += map.checkNeighbors(move.r, move.q, 6, checkField);
 
-                //Jaay, free field => set to 5 for black or 6 for Red (checked and free) else dig deeper
+                //Free field -> return 1
                 if (checker > 0)
                 {
                     return 1;

@@ -10,16 +10,17 @@ namespace Adantino
 {
     public class Map
     {
-        const int fieldRadius = 9;    //Field radius in each direction 
-        public bool black { get; set; }
-        public bool blackAI { get; set; }
-        public bool redAI { get; set; }
+        const int fieldRadius = 9;          //Field radius in each direction 
+        public bool black { get; set; }     //if true, its blacks turn, otherwise reds turn
+        public bool blackAI { get; set; }   //is black AI activated?
+        public bool redAI { get; set; }     //is red AI activated?
         public bool abReady { get; set; }
-        public int aiDepth { get; set; }
-        public int[,] myField { get; set; }
-        public List<int[,]> moveList { get; set; }
-        public int moveCounter { get; set; }
+        public int aiDepth { get; set; }    //current Alpha-Beta depth
+        public int[,] myField { get; set; } //The Map is stored here   
+        public List<int[,]> moveList { get; set; }  //Stores a list of Moves, important for the undo function
+        public int moveCounter { get; set; }   
 
+        //init the Game field
         public void initField()
         {
             aiDepth = 0;
@@ -31,7 +32,7 @@ namespace Adantino
             blackAI = true;
             redAI = true;
 
-            //filling the Array with -1
+            //filling the whole array with -1
             for (int i = 0; i < 20; i++)
             {
                 for (int j = 0; j < 20; j++)
@@ -51,7 +52,7 @@ namespace Adantino
                 }
             }
 
-            //startPosition
+            //start position
             myField[9, 9] = 1;
             myField[8, 10] = myField[8, 9] = myField[9, 8] = myField[10, 8] = myField[9, 10] = 3;
             myField[10, 9] = 4;
@@ -85,7 +86,7 @@ namespace Adantino
                     Console.WriteLine("SET POS: " + (r + fieldRadius) + " ; " + (q + fieldRadius) + " set to red");
                 }
 
-                //remove last recommondation
+                //remove last recommendation
                 removeMoves(4);
 
                 //Check the field for possible moves
@@ -96,7 +97,7 @@ namespace Adantino
                 //Check for winner
                 win = check.checkWin(myField);
 
-                //Next players turn!!
+                //Next players turn!
                 black = !black;
 
                 if (win == 1 || win == 2)
@@ -113,6 +114,7 @@ namespace Adantino
             }
         }
 
+        //checks neighbors for a Type returns count of it
         public int checkNeighbors(int r, int q, int type, int[,] checkPos)
         {
             int i = 0;
@@ -144,6 +146,7 @@ namespace Adantino
             return i;
         }
 
+        //returns a map filled with possible moves = 3
         public int[,] checkPosMoves(int[,] checkPos)
         {
             for (int q = -(fieldRadius); q <= fieldRadius; q++)
@@ -173,17 +176,18 @@ namespace Adantino
             return checkPos;
         }
 
+        //returns a list<moves> of possible moves
         public List<Move> getPosMoves(int[,] checkList)
         {
             List<Move> posMovesList = new List<Move>();
-
-            //remove all possible moves / make unplayable
+            
             for (int q = -(fieldRadius); q <= fieldRadius; q++)
             {
                 int r1 = Math.Max(-fieldRadius, -q - fieldRadius);
                 int r2 = Math.Min(fieldRadius, -q + fieldRadius);
                 for (int r = r1; r <= r2; r++)
                 {
+                    //if the field is playable (=3) add to List
                     if (checkList[r + fieldRadius, q + fieldRadius] == 3)
                     {
                         Move move = new Move(r, q);
@@ -195,6 +199,7 @@ namespace Adantino
             return posMovesList;
         }
 
+        //returns a list<moves> of all fields that are NOT the enemy
         public List<Move> getMyEnemyNeighbors(int rBuffer, int qBuffer, int[,] checkField, int enemy)
         {
             List<Move> myNeighbors = new List<Move>();
@@ -249,6 +254,7 @@ namespace Adantino
             return myNeighbors;
         }
 
+        //returns a list<moves> of moves, that fit the currentPlayer
         public List<Move> getMyNeighbors(int rBuffer, int qBuffer, int[,] checkField, int currentPlayer)
         {
             List<Move> myNeighbors = new List<Move>();
@@ -303,15 +309,16 @@ namespace Adantino
             return myNeighbors;
         }
 
+        //removes moves of the type provided
         public void removeMoves(int what)
         {
-            //remove all possible moves / make unplayable
             for (int q = -(fieldRadius); q <= fieldRadius; q++)
             {
                 int r1 = Math.Max(-fieldRadius, -q - fieldRadius);
                 int r2 = Math.Min(fieldRadius, -q + fieldRadius);
                 for (int r = r1; r <= r2; r++)
                 {
+                    //if its the type remove it
                     if (myField[r + fieldRadius, q + fieldRadius] == what)
                     {
                         myField[r + fieldRadius, q + fieldRadius] = 0;
@@ -320,9 +327,10 @@ namespace Adantino
             }
         }
 
+        //swap moves from -> to
         public void swapMoves(int from, int to)
         {
-            //remove all possible moves / make unplayable
+            //run through the field
             for (int q = -(fieldRadius); q <= fieldRadius; q++)
             {
                 int r1 = Math.Max(-fieldRadius, -q - fieldRadius);

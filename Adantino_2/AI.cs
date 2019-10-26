@@ -19,8 +19,10 @@ namespace Adantino
 
         public void alphaBetaStart()
         {
+            //Depth initially to 2
             map.aiDepth = 2;
             map.abReady = false;
+
             //remove last recommendation
             map.removeMoves(4);
 
@@ -44,6 +46,7 @@ namespace Adantino
 
             Move bestMove = new Move(0, 0);
 
+            //just necessary for the kill thread
             while(!map.abReady)
             {
                 for (int i = 0; i < posMovesList.Count; i++)
@@ -64,10 +67,14 @@ namespace Adantino
                     bool bBuffer = !map.black;
 
                     int score = 0;
+
+                    //perform AlphaBeta-Search for the specific move
                     score = alphaBeta(bufferMove, evalField, map.aiDepth, -9999, 9999, bBuffer);
 
+                    //save the score, for moveordering
                     posMovesList.ElementAt(i).score = score;
 
+                    //check for highscores and set best moves
                     if (map.black)
                     {
                         if (score >= highScore)
@@ -96,22 +103,25 @@ namespace Adantino
                     Console.WriteLine("Enemy Black will win in " + map.aiDepth + " moves");
                 else
                 {
+                    //remove "best move" from last iteration and set the new one
                     map.swapMoves(4,3);
                     map.myField[(bestMove.r + fieldRadius), (bestMove.q + fieldRadius)] = 4;
                 }
                     
-                
+                //Move ordering
                 if(map.black)
                     posMovesList = posMovesList.OrderBy(q => q.score).ToList();
                 else
                     posMovesList = posMovesList.OrderByDescending(buffer => buffer.score).ToList();
 
+                //increase ai depth
                 map.aiDepth++;
             }
         }
 
         public int alphaBeta(Move move, int[,] scoreField, int depth, int alpha, int beta, bool black)
         {
+            //first check for win
             int win = check.checkWin(scoreField);
 
             if (win == 1)
@@ -120,6 +130,7 @@ namespace Adantino
             if (win == 2)
                 return -2000;
 
+            //depth = 0 --> evaluate position 
             if (depth == 0)
                 return evalPos(scoreField);
 
@@ -130,6 +141,7 @@ namespace Adantino
             {
                 scoreField = map.checkPosMoves(scoreField);
 
+                //get all new possible moves
                 List<Move> posAB = map.getPosMoves(scoreField);
 
                 int maxEval = -9999;
@@ -143,12 +155,15 @@ namespace Adantino
                     int[,] bufferField = new int[20, 20];
                     bufferField = scoreField.Clone() as int[,];
 
+                    //set the new possible move
                     bufferField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 1;
 
                     eval = alphaBeta(bufferMove, bufferField, depth - 1, alpha, beta, false);
 
                     //Console.WriteLine("Move: " + (bufferMove.r + fieldRadius) + " ; " + (bufferMove.q + fieldRadius) + " " + eval)
                     maxEval = Math.Max(maxEval, eval);
+
+                    //alphaBeta
                     alpha = Math.Max(alpha, eval);
                     if (beta <= alpha)
                         break;
@@ -160,6 +175,7 @@ namespace Adantino
             {
                 scoreField = map.checkPosMoves(scoreField);
 
+                //get all new possible moves
                 List<Move> posAB = map.getPosMoves(scoreField);
 
                 int minEval = 9999;
@@ -172,11 +188,14 @@ namespace Adantino
                     int[,] bufferField = new int[20, 20];
                     bufferField = scoreField.Clone() as int[,];
 
+                    //set the new possible move
                     bufferField[bufferMove.r + fieldRadius, bufferMove.q + fieldRadius] = 2;
 
                     eval = alphaBeta(bufferMove, bufferField, depth - 1, alpha, beta, true);
 
                     minEval = Math.Min(minEval, eval);
+
+                    //alphaBeta
                     beta = Math.Min(beta, eval);
                     if (beta <= alpha)
                         break;
@@ -226,6 +245,7 @@ namespace Adantino
                 brow = 0;
             }
 
+            //give reward, if the own row is "better"
             if (rbestrow > bbestrow-1)
                 reward += -200;
             else if (rbestrow-1 < bbestrow)
@@ -268,6 +288,7 @@ namespace Adantino
                 brow = 0;
             }
 
+            //give reward, if the own row is "better"
             if (rbestrow > bbestrow - 1)
                 reward += -200;
             else if (rbestrow - 1 < bbestrow)
@@ -309,6 +330,7 @@ namespace Adantino
                 brow = 0;
             }
 
+            //give reward, if the own row is "better"
             if (rbestrow > bbestrow - 1)
                 reward += -200;
             else if (rbestrow - 1 < bbestrow)
@@ -317,9 +339,6 @@ namespace Adantino
                 reward += -100;
             else if (rbestrow < bbestrow)
                 reward += 100;
-
-            bbestrow = 0;
-            rbestrow = 0;
 
             //Console.WriteLine("Bestrow: " + bestrow + " for " + black);
 

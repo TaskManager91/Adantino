@@ -14,6 +14,7 @@ namespace Adantino
 
         public int score { get; set; }
 
+        //simple class to store a move
         public Move(int bufferR, int bufferQ)
         {
             r = bufferR;
