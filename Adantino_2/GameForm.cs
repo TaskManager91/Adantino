@@ -503,12 +503,15 @@ namespace Adantino
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            int bufferDepth = 0;
+            int bufferDepth = 4;
+            Console.WriteLine("START AI at move: " + myMap.moveCounter);
+            int sleep = 0;
+            int lastTime = 0;
 
             do
             {
                 //wait a bit
-                Thread.Sleep(200);
+                Thread.Sleep(50);
 
                 TimeSpan elapsed = stopwatch.Elapsed;
                 currentAiTime = Convert.ToInt32(elapsed.TotalMilliseconds);
@@ -516,13 +519,27 @@ namespace Adantino
                 //if the ai reached a new depth
                 if (myMap.aiDepth >= bufferDepth)
                 {
+
+                    if (lastTime == 0)
+                        lastTime = currentAiTime;
+                    else
+                        lastTime = currentAiTime - lastTime;
+
+                    Console.WriteLine("Depth: " + myMap.aiDepth);
+                    Console.WriteLine("Time: " + lastTime);
                     redrawPanelSafe();
                     aiTime = currentAiTime;
                     currentAiTime = 0;
                     bufferDepth++;
                 }
 
-                redrawLabelsSafe();
+                if(sleep == 4)
+                {
+                    redrawLabelsSafe();
+                    sleep = 0;
+                }
+                
+                sleep++;
             } while (!myMap.abReady);
 
 
