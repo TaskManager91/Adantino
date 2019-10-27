@@ -67,6 +67,12 @@ namespace Adantino
         public int makeMove(int r, int q)
         {
             int win = -1;
+            int rChecker = r + fieldRadius;
+            int qChecker = q + fieldRadius;
+
+            //Radius check	
+            if (rChecker >= 20 || qChecker >= 20 || rChecker <= -1 || qChecker <= -1)
+                return win;
 
             if (myField[r + fieldRadius, q + fieldRadius] != 3 && myField[r + fieldRadius, q + fieldRadius] != 4)
             {
