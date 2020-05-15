@@ -1,4 +1,6 @@
 # Adantino
-"Adantino" board game implementation with alpha-beta search.
+An [Adantino](http://www.di.fc.ul.pt/~jpn/gv/andantino.htm "Adantino") "Game of Soldiers" implementation with a very strong AI.
 
-Made this for my ISG assignment
+This Game AI uses alpha–beta pruning is a search algorithm to decrease the number of nodes that are evaluated by the minimax algorithm in its search tree.
+
+![game](https://raw.githubusercontent.com/TaskManager91/Adantino/master/res/game.png "game")
